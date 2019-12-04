@@ -1,5 +1,11 @@
 # Essence-emulator
 
+## Introduction
+
+Please know that this is as unfinished as it can be. Internal server communication needs a lot of rework, and the same with the database logic & webrequests.
+
+Though, this server provides pretty much every feature the game had. Except for in-game quests, titles and power-ups. Enjoy :)
+
 ## Instructions
 
 Coming soon
