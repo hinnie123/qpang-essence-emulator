@@ -1,5 +1,14 @@
 # Essence-emulator
 
+## Discord:
+
+[Discord](https://discord.gg/2AMAZEt)
+
+## Downloads:
+
+[Qpang Installer](https://mega.nz/#!lQtUSCyJ!QuLAQrdKgl5mL3q8yRWI4fTXIxOzU4cSm6GoGrmbiHk)
+[Patched client](https://mega.nz/#!ABcAxIZL!XRc9eMIuCmpIK3PYQnZ0m1JaSLcTYdQOqQ3InQpPPeM)
+
 ## Introduction
 
 Please know that this is as unfinished as it can be. Internal server communication needs a lot of rework, and the same with the database logic & webrequests.
