@@ -18,7 +18,7 @@ Though, this server provides pretty much every feature the game had. Except for 
 
 ## Instructions
 
-Coming soon
+[Server set-up instructions](https://gist.github.com/Deluze/2935e17fd6b80c1c16a6a5c0b952c723)
 
 
 ### Contributors & Thanks
