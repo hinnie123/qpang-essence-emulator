@@ -14,6 +14,12 @@
 class Logger {
 
 public:
+	static Logger* Instance()
+	{
+		static Logger logger;
+		return &logger;
+	}
+
 	void Init(std::string name)
 	{
 		try
@@ -37,12 +43,7 @@ public:
 	{
 		return _logger;
 	}
-	static Logger* Instance()
-	{
-		static Logger logger;
-		return &logger;
-	}
-
+	
 private:
 	std::shared_ptr<spdlog::logger> _logger;
 };
