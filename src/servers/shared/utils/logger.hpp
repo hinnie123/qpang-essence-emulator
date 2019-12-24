@@ -4,11 +4,17 @@
 #include <string>
 #include <memory>
 #include "spdlog/spdlog.h"
+#include "spdlog/async.h"
+#include "spdlog/async_logger.h"
+#include "spdlog/sinks/daily_file_sink.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
+#include <boost/filesystem.hpp>
+#include <iostream>
 
 class Logger {
 
 public:
-	void Logger::Init(std::string name)
+	void Init(std::string name)
 	{
 		try
 		{
@@ -27,7 +33,7 @@ public:
 		}
 	}
 
-	std::shared_ptr<spdlog::logger> Logger::Get()
+	std::shared_ptr<spdlog::logger> Get()
 	{
 		return _logger;
 	}
@@ -37,11 +43,10 @@ public:
 		return &logger;
 	}
 
-	void Init(std::string name);
-	std::shared_ptr<spdlog::logger> Get();
 private:
 	std::shared_ptr<spdlog::logger> _logger;
 };
+
 
 #define sLogger Logger::Instance()
 
