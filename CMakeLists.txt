@@ -39,11 +39,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 #---- Boost Asio
 # Use static libs only
-set(Boost_USE_STATIC_LIBS ON)
+#set(Boost_USE_STATIC_LIBS ON)
+
 set(Boost_USE_MULTITHREADED ON)
-find_package(Boost 1.68.0 COMPONENTS system regex filesystem thread REQUIRED)
 
-
+find_package(Boost COMPONENTS system regex filesystem thread REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(CURL REQUIRED)
 find_package(unofficial-curlpp CONFIG REQUIRED)
