@@ -30,6 +30,7 @@ target_link_libraries(
 	shared
 	${Boost_LIBRARIES}
 	${MYSQL_LIBRARIES}
-  unofficial::curlpp::curlpp)
+  unofficial::curlpp::curlpp
+  bcrypt)
 
 	
