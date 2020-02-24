@@ -5,7 +5,7 @@
 #define DB_USER "root"   
 #define DB_PASS ""   
 #define DB_PORT 3306   
-#define DB_NAME "qpang_test" 
+#define DB_NAME "qpang" 
 
 #include <iostream>
 #include <mysql.h>

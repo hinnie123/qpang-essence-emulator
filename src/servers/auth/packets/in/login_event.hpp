@@ -3,6 +3,7 @@
 
 #include <boost/lexical_cast.hpp>
 #include <cstdint>
+
 #include "web_request/request.hpp"
 #include "auth_manager.hpp"
 #include "packet_event.hpp"

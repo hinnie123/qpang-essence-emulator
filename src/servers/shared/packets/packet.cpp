@@ -4,12 +4,6 @@
 #include <array>
 #include <iostream>
 
-
-ClientPacket::ClientPacket()
-	: header{ 0 }
-{
-}
-
 ServerPacket::ServerPacket(Opcode opcode, size_t length)
 	: header{ 0 }
 {
