@@ -57,9 +57,17 @@ public:
 		return true;
 	}
 
+	uint64_t ReadLong();
+	uint32_t ReadInt();
+	uint16_t ReadShort();
+	uint8_t ReadByte();
+	bool ReadFlag();
+	void ReadEmpty(uint32_t amount = 1);
+	void SetBufferPosition(uint32_t bufferPosition);
+
+	uint32_t bufferPosition;
 	PacketHeader header;
 	std::vector<char> buffer;
-
 };
 
 #endif

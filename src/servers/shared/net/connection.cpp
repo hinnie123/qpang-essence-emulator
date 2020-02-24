@@ -166,6 +166,7 @@ void Connection::OnHeaderRead(const ErrorCode& ec)
 	}
 
 	_inPacket.buffer.resize(_inPacket.header.fullLength - 4);
+	_inPacket.SetBufferPosition(8);
 
 	try
 	{
