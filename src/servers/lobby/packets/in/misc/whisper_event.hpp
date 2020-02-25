@@ -16,23 +16,24 @@ class WhisperEvent : public LobbyPacketEvent {
 public:
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
-		pack.buffer.resize(sizeof(Packets::Lobby::Whisper) + pack.buffer.size() - 36); // 36 = length before message starts. resizing because buffer size is dynamic
-		auto data = pack.Read<Packets::Lobby::Whisper>();
-		std::string targetNickname = StringConverter::WcharToString(data.nickname, 16);
-		std::string message = StringConverter::WcharToString(data.message, data.messageLength % 254);
+		uint32_t unk01 = pack.ReadInt();
+		uint16_t length = pack.ReadShort();
+		std::u16string nickname = pack.ReadUtf16String(16);
+		std::u16string message = pack.ReadUtf16String(length);
 
-		auto target = session->GetLobby()->FindSession(targetNickname);
-		if (target != nullptr)
-		{
-			std::string senderNickname = session->Info()->Nickname();
-			auto packet = WhisperReceivedEvent{ senderNickname, message };
-			auto rspPacket = WhisperResponseEvent{ targetNickname, message };
-
-			target->Send(packet.Compose(target.get()));
-			session->Send(rspPacket.Compose(session));
-		}
-		else
-			session->Send(WhisperFailEvent{ 719 }.Compose(session)); // 718 = FR_MSG_REFUSE_WHISPER, 719 = FR_MSG_NOT_CONNECTED. Should be self-explanatory.
+		// TODO: this
+		//auto target = session->GetLobby()->FindSession(StringConverter::Utf16ToUtf8(nickname));
+		//if (target != nullptr)
+		//{
+		//	std::string senderNickname = session->Info()->Nickname();
+		//	auto packet = WhisperReceivedEvent{ senderNickname, message };
+		//	auto rspPacket = WhisperResponseEvent{ targetNickname, message };
+		//
+		//	target->Send(packet.Compose(target.get()));
+		//	session->Send(rspPacket.Compose(session));
+		//}
+		//else
+		//	session->Send(WhisperFailEvent{ 719 }.Compose(session)); // 718 = FR_MSG_REFUSE_WHISPER, 719 = FR_MSG_NOT_CONNECTED. Should be self-explanatory.
 	}
 };
 

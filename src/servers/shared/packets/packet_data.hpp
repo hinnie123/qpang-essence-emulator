@@ -48,19 +48,6 @@ namespace Packets
 
 	namespace Auth
 	{
-
-		struct Login : ClientPacketData
-		{
-			char padding[16]; //8
-			wchar_t loginId[21]; //24
-			wchar_t password[17]; //66
-			uint32_t unk;
-			uint32_t unk_01;
-			uint32_t unknown; //104
-			uint32_t gameVersion; //108
-			uint32_t unk_02;
-		};
-
 		struct LoginRsp : ServerPacketData
 		{
 			uint32_t lobbyServerIp; 
@@ -195,16 +182,6 @@ namespace Packets
 			uint16_t unknown;
 			uint16_t countInPacket;
 			Channel channels[10];
-		};
-
-		struct ChannelConnect : ClientPacketData
-		{
-			uint32_t channelId;
-			uint32_t unknown01;
-			uint32_t unknown02;
-			uint32_t unknown03;
-			uint32_t unknown04;
-			uint32_t unknown05;
 		};
 #pragma pack(push, 1)
 		struct ChannelConnectRsp : ServerPacketData

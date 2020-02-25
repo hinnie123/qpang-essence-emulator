@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <vector>
 #include <exception>
+#include <string>
 
 class ClientPacket
 {
@@ -24,6 +25,14 @@ public:
 		const char* what() const throw ()
 		{
 			return "Client Packet Read Exception";
+		}
+	};
+
+	struct PacketLengthException : public std::exception
+	{
+		const char* what() const throw ()
+		{
+			return "Client packet received is too small";
 		}
 	};
 
@@ -57,13 +66,15 @@ public:
 		return true;
 	}
 
+	std::u16string ReadUtf16String(uint32_t length);
 	uint64_t ReadLong();
 	uint32_t ReadInt();
 	uint16_t ReadShort();
 	uint8_t ReadByte();
 	bool ReadFlag();
-	void ReadEmpty(uint32_t amount = 1);
+	void Skip(uint32_t amount = 1);
 	void SetBufferPosition(uint32_t bufferPosition);
+	bool Validate(uint32_t amount = 1);
 
 	uint32_t bufferPosition;
 	PacketHeader header;

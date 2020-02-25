@@ -136,21 +136,14 @@ public:
 
 		if (theEvent != _events.cend())
 		{
-			if (theEvent->second->size == 0 || header.length == theEvent->second->size)
-			{
 				try
 				{
-					sLogger->Get()->debug("{0} Packet {1:d}", session->Info()->Nickname(), static_cast<uint16_t>(header.opcode));
 					return theEvent->second->Read(session, pack);
 				}
 				catch (std::exception & e)
 				{
-					sLogger->Get()->error("LobbyPacketHandler Error: {0}", e.what());
+					sLogger->Get()->error("{0:d} - [{1}:{2:d}]: {3}", header.opcode, session->Info()->Nickname(), session->Info()->Id(), e.what());
 				}
-			}
-			
-			uint16_t packetId = static_cast<uint16_t>(header.opcode);
-			sLogger->Get()->error("Packet {0:d} should be of size: {1:d} actual on the server: {2:d}", packetId, header.length, theEvent->second->size);
 		}
 
 		sLogger->Get()->warn("Packet {0:d} is not being handled on the server yet", static_cast<uint16_t>(header.opcode));

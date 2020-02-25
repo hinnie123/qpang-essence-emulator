@@ -7,6 +7,8 @@
 
 class StringConverter {
 public:
+	static std::string Utf16ToUtf8(std::u16string string);
+	static std::u16string Utf8ToUtf16(std::string string);
 	static std::wstring StringToWString(std::string string);
 	static std::string WStringToString(std::wstring string);
 	static const wchar_t* StringToWChar(std::string string, const size_t size = 0);

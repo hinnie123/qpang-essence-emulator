@@ -14,7 +14,7 @@ public:
 	{
 		if (_events.size() <= 0)
 			return;
-		
+
 		if (!conn)
 			return;
 
@@ -29,18 +29,14 @@ public:
 		if (set != _events.cend())
 		{
 			auto theEvent = set->second;
-			if (theEvent->size == 0 || theEvent->size == header.length)
+			try
 			{
-				try
-				{
-					return theEvent->Read(conn, pack);
-				}
-				catch (std::exception & e)
-				{
-					sLogger->Get()->critical("Failure during execution of packet: {0:d}", static_cast<uint16_t>(code));
-				}
+				return theEvent->Read(conn, pack);
 			}
-			sLogger->Get()->error("Packet {0:d} should be of size: {1:d} but serverside size is: {2:d}", static_cast<uint16_t>(code), header.length, theEvent->size);
+			catch (std::exception & e)
+			{
+				sLogger->Get()->error("{0:d} -: {1}", code, e.what());
+			}
 		}
 	};
 protected:
