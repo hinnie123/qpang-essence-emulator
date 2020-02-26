@@ -11,6 +11,7 @@
 #include "crypto/blowfish.hpp"
 
 #include "client_packet.hpp"
+#include "server_packet.hpp"
 #include "types.hpp"
 #include "logger.hpp"
 
