@@ -72,6 +72,19 @@ public:
 	uint16_t ReadShort();
 	uint8_t ReadByte();
 	bool ReadFlag();
+
+	template<typename T, uint32_t N>
+	std::array<T, N> ReadArray()
+	{
+		std::array<T, N> arr;
+		uint32_t sizeToCopy = sizeof(T) * N;
+
+		std::memcpy(&arr, buffer.data() + bufferPosition, sizeToCopy);
+		bufferPosition += sizeToCopy;
+
+		return arr;
+	}
+
 	void Skip(uint32_t amount = 1);
 	void SetBufferPosition(uint32_t bufferPosition);
 	bool Validate(uint32_t amount = 1);
