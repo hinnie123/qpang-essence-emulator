@@ -29,6 +29,20 @@ public:
 	ServerPacket* WriteByte(uint8_t value);
 	ServerPacket* WriteFlag(bool value);
 	ServerPacket* WriteEmpty(uint32_t amount);
+	
+	template<typename T, size_t N>
+	ServerPacket* WriteArray(std::array<T, N> arr)
+	{
+		size_t copySize = sizeof(T) * N;
+
+		buffer.resize(buffer.size() + copySize);
+
+		std::memcpy(buffer.data() + m_bufferPosition, &arr, copySize);
+
+		m_bufferPosition += copySize;
+
+		return this;
+	}
 
 	Opcode GetOpcode();
 
