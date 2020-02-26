@@ -82,6 +82,7 @@ public:
 
 			response.equipment[i] = equipment;
 		}
+
 		return ServerPacket::Create<Opcode::LOBBY_LOGIN_RSP>(response);
 	};
 private:

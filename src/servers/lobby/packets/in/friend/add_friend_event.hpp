@@ -69,7 +69,7 @@ public:
 			Friend friendToAdd = session->Friends()->ConstructFriend(session->Info()->Id(), offlinePlayer.playerId, offlinePlayer.nickname, offlinePlayer.level);
 
 			Database database{};
-			auto queryResult = database.storeQuery(str(boost::format("SELECT count(*) as count FROM friends WHERE user_to = %1%") % offlinePlayer.playerId));
+			auto queryResult = database.storeQuery(str(boost::format("SELECT count(*) as count FROM friends WHERE player_to = %1%") % offlinePlayer.playerId));
 			uint32_t count = queryResult->getNumber<uint32_t>("count");
 			database.Close();
 

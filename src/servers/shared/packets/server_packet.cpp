@@ -1,17 +1,108 @@
 #include "server_packet.hpp"
 
 ServerPacket::ServerPacket(Opcode opcode, size_t length)
-	: header{ 0 }
+	: header{ 0 }, m_opCode{ opcode }, m_bufferPosition{ 8 }
 {
-	buffer.resize(length + 4);
-	WritePayloadHeader({ static_cast<uint16_t>(length + 4), opcode });
-	header.fullLength = static_cast<uint16_t>(length + 8);
+
+	buffer.resize(length + m_bufferPosition);
+	//header.fullLength = static_cast<uint16_t>(length + 8);
 }
 
 ServerPacket::ServerPacket()
 	: header{ 0 }
 {
 
+}
+
+ServerPacket* ServerPacket::WriteUtf8String(std::string string, uint32_t length)
+{
+	buffer.resize(buffer.size() + length + 1);
+
+	std::memcpy(buffer.data() + m_bufferPosition, string.data(), string.size() + 1);
+
+	m_bufferPosition += length + 1;
+
+	return this;
+}
+
+ServerPacket* ServerPacket::WriteUtf16String(std::u16string string, uint32_t length)
+{
+	buffer.resize(buffer.size() + length * 2 + 2);
+
+	std::memcpy(buffer.data() + m_bufferPosition, string.data(), string.size() > length ? string.size() * 2  + 2 : length * 2 + 2);
+
+	m_bufferPosition += length * 2 + 2;
+	
+	return this;
+}
+
+ServerPacket* ServerPacket::WriteLong(uint64_t value)
+{
+	buffer.resize(buffer.size() + 8);
+
+	std::memcpy(buffer.data() + m_bufferPosition, &value, 8);
+
+	m_bufferPosition += 8;
+
+	return this;
+}
+
+ServerPacket* ServerPacket::WriteInt(uint32_t value)
+{
+	buffer.resize(buffer.size() + 4);
+
+	std::memcpy(buffer.data() + m_bufferPosition, &value, 4);
+
+	m_bufferPosition += 4;
+
+	return this;
+}
+
+ServerPacket* ServerPacket::WriteShort(uint16_t value)
+{
+	buffer.resize(buffer.size() + 2);
+
+	std::memcpy(buffer.data() + m_bufferPosition, &value, 2);
+
+	m_bufferPosition += 2;
+
+	return this;
+}
+
+ServerPacket* ServerPacket::WriteByte(uint8_t value)
+{
+	buffer.resize(buffer.size() + 1);
+
+	std::memcpy(buffer.data() + m_bufferPosition, &value, 1);
+
+	m_bufferPosition += 1;
+
+	return this;
+}
+
+ServerPacket* ServerPacket::WriteFlag(bool value)
+{
+	buffer.resize(buffer.size() + 1);
+
+	std::memcpy(buffer.data() + m_bufferPosition, &value, 1);
+
+	m_bufferPosition += 1;
+
+	return this;
+}
+
+ServerPacket* ServerPacket::WriteEmpty(uint32_t amount)
+{
+	buffer.resize(buffer.size() + amount);
+
+	m_bufferPosition += amount;
+
+	return this;
+}
+
+Opcode ServerPacket::GetOpcode()
+{
+	return m_opCode;
 }
 
 

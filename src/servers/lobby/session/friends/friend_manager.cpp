@@ -13,8 +13,8 @@ void FriendManager::Load(uint32_t playerId)
 		do
 		{
 			uint32_t id = result->getNumber<uint32_t>("id");
-			uint32_t fromPlayerId = result->getNumber<uint32_t>("user_from");
-			uint32_t toPlayerId = result->getNumber<uint32_t>("user_to");
+			uint32_t fromPlayerId = result->getNumber<uint32_t>("player_from");
+			uint32_t toPlayerId = result->getNumber<uint32_t>("player_to");
 			std::string fromPlayerNickname = result->getString("name");
 			uint8_t level = result->getNumber<uint32_t>("level");
 			uint8_t friendshipState = result->getNumber<uint32_t>("status");
@@ -74,12 +74,12 @@ bool FriendManager::AddFriend(Friend friendToAdd, State state)
 	if (state != State::BOTH)
 	{
 		friendToAdd.state = static_cast<uint8_t>(state);
-		result = database.executeQuery(str(boost::format("INSERT INTO friends (user_from, user_to, status) VALUES (%1%, %2%, %3%)") % friendToAdd.fromId % friendToAdd.toPlayerId % state));
+		result = database.executeQuery(str(boost::format("INSERT INTO friends (player_from, player_to, status) VALUES (%1%, %2%, %3%)") % friendToAdd.fromId % friendToAdd.toPlayerId % state));
 	}
 	else
 	{
-		result = database.executeQuery(str(boost::format("INSERT INTO friends (user_from, user_to, status) VALUES (%1%, %2%, %3%)") % friendToAdd.fromId % friendToAdd.toPlayerId % State::OUTGOING));
-		database.executeQuery(str(boost::format("INSERT INTO friends (user_from, user_to, status) VALUES (%1%, %2%, %3%)") % friendToAdd.toPlayerId % friendToAdd.fromId % State::INCOMING));
+		result = database.executeQuery(str(boost::format("INSERT INTO friends (player_from, player_to, status) VALUES (%1%, %2%, %3%)") % friendToAdd.fromId % friendToAdd.toPlayerId % State::OUTGOING));
+		database.executeQuery(str(boost::format("INSERT INTO friends (player_from, player_to, status) VALUES (%1%, %2%, %3%)") % friendToAdd.toPlayerId % friendToAdd.fromId % State::INCOMING));
 		friendToAdd.state = static_cast<uint8_t>(State::OUTGOING);
 	}
 
@@ -120,7 +120,7 @@ bool FriendManager::RemoveFriend(uint32_t targetId)
 			if (it->toPlayerId == targetId)
 			{
 				Database database{};
-				bool result = database.executeQuery(str(boost::format("DELETE FROM friends WHERE (user_from = %1% AND user_to = %2%) OR (user_from = %2% AND user_to = %1%)") % it->toPlayerId % it->fromId));
+				bool result = database.executeQuery(str(boost::format("DELETE FROM friends WHERE (player_from = %1% AND player_to = %2%) OR (player_from = %2% AND player_to = %1%)") % it->toPlayerId % it->fromId));
 				database.Close();
 				_friends.erase(it);
 				return result;
