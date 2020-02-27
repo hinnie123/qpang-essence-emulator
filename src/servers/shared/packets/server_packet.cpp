@@ -16,9 +16,11 @@ ServerPacket::ServerPacket()
 
 ServerPacket* ServerPacket::WriteUtf8String(std::string string, uint32_t length)
 {
+	size_t copySize = length + 1;
+
 	buffer.resize(buffer.size() + length + 1);
 
-	std::memcpy(buffer.data() + m_bufferPosition, string.data(), string.size() + 1);
+	std::memcpy(buffer.data() + m_bufferPosition, string.data(), string.size() > length ? length : string.size() + 1);
 
 	m_bufferPosition += length + 1;
 
@@ -27,11 +29,13 @@ ServerPacket* ServerPacket::WriteUtf8String(std::string string, uint32_t length)
 
 ServerPacket* ServerPacket::WriteUtf16String(std::u16string string, uint32_t length)
 {
-	buffer.resize(buffer.size() + length * 2 + 2);
+	size_t copySize = length * 2 + 2;
 
-	std::memcpy(buffer.data() + m_bufferPosition, string.data(), string.size() > length ? string.size() * 2  + 2 : length * 2 + 2);
+	buffer.resize(buffer.size() + copySize);
 
-	m_bufferPosition += length * 2 + 2;
+	std::memcpy(buffer.data() + m_bufferPosition, string.data(), string.size() > length ? copySize : string.size() * 2 + 2);
+
+	m_bufferPosition += copySize;
 	
 	return this;
 }
