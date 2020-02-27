@@ -17,6 +17,7 @@ public:
 	{
 		uint16_t characterOffset = session->Equipment()->GetCharacterIndex(session->Info()->Character());
 
+		uint16_t characterIndex = pack.ReadShort();
 		uint64_t head = pack.ReadLong();
 		uint64_t face = pack.ReadLong();
 		uint64_t body = pack.ReadLong();
@@ -25,6 +26,7 @@ public:
 		uint64_t shoes = pack.ReadLong();
 		uint64_t back = pack.ReadLong();
 		uint64_t side = pack.ReadLong();
+		uint32_t unk01 = pack.ReadInt();
 
 		session->Equipment()->SetEquipmentPart((EquipmentManager::Character)characterOffset, EquipmentManager::EquipmentSlot::HEAD, head);
 		session->Equipment()->SetEquipmentPart((EquipmentManager::Character)characterOffset, EquipmentManager::EquipmentSlot::FACE, face);
