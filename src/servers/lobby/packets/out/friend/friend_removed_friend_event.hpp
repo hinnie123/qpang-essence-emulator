@@ -12,13 +12,15 @@ class FriendRemovedFriendEvent : public LobbyPacketEvent {
 public:
 	FriendRemovedFriendEvent(uint32_t targetId, std::string nickname) { _targetId = targetId; _nickname = nickname; };
 
-	ServerPacket Compose(LobbySession* session) override {
-		Packets::Lobby::RemoveIncomingFriend rsp{};
+	ServerPacket Compose(LobbySession* session) override 
+	{
+		auto packet = ServerPacket::Create<Opcode::LOBBY_FRIEND_REMOVE_FRIEND>();
 
-		rsp.playerId = _targetId;
-		wcsncpy(rsp.nickname, std::wstring(_nickname.begin(), _nickname.end()).data(), 16);
+		packet.WriteInt(_targetId);
+		packet.WriteLong(0); // unknown
+		packet.WriteUtf16String(StringConverter::Utf8ToUtf16(_nickname), 16);
 
-		return ServerPacket::Create<Opcode::LOBBY_FRIEND_REMOVE_FRIEND>(rsp);
+		return packet;
 	};
 private:
 	uint32_t _targetId;

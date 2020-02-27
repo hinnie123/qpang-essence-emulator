@@ -17,11 +17,14 @@ public:
 
 	ServerPacket Compose(LobbySession* session) override
 	{
-		Packets::Lobby::GameRefreshRsp rsp{};
-		rsp.gameServerIp = _host;
-		rsp.gameServerPort = _port;
-		rsp.canCreateRooms = _roomsAvailable;
-		return ServerPacket::Create<Opcode::LOBBY_GAMESERVER_REFRESH_RSP>(rsp);
+		auto packet = ServerPacket::Create<Opcode::LOBBY_GAMESERVER_REFRESH_RSP>();
+
+		packet.WriteFlag(_roomsAvailable);
+		packet.WriteInt(_host);
+		packet.WriteShort(_port);
+		packet.WriteEmpty(42);
+
+		return packet;
 	}
 private:
 	uint32_t _host;

@@ -11,9 +11,12 @@ public:
 	DropCardResponseEvent(uint32_t cardId) { _cardId = cardId; };
 	
 	ServerPacket Compose(LobbySession* session) override {
-		Packets::Lobby::DeleteCardRsp rsp{};
-		rsp.cardId = _cardId;
-		return ServerPacket::Create<Opcode::LOBBY_DROP_CARD_RSP>(rsp);
+
+		auto packet = ServerPacket::Create<Opcode::LOBBY_DROP_CARD_RSP>();
+
+		packet.WriteLong(_cardId);
+
+		return packet;
 	};
 private:
 	uint32_t _cardId;

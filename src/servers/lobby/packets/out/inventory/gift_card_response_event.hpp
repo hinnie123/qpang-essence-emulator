@@ -11,9 +11,13 @@ public:
 	GiftCardResponseEvent(uint64_t cardId) { _cardId = cardId; };
 	
 	ServerPacket Compose(LobbySession* session) override {
-		Packets::Lobby::GiftCardRsp rsp{};
-		rsp.cardId = _cardId;
-		return ServerPacket::Create<Opcode::LOBBY_GIFT_ITEM_RSP>(rsp);
+		
+		auto packet = ServerPacket::Create<Opcode::LOBBY_GIFT_ITEM_RSP>();
+
+		packet.WriteEmpty(34);
+		packet.WriteLong(_cardId);
+
+		return packet;
 	};
 private:
 	uint64_t _cardId;

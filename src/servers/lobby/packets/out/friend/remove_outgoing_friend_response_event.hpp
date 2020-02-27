@@ -11,9 +11,12 @@ public:
 	RemoveOutgoingFriendResponseEvent(uint32_t targetId) { _targetId = targetId; };
 
 	ServerPacket Compose(LobbySession* session) override {
-		Packets::Lobby::RemoveOutgoingFriendRsp rsp{};
-		rsp.targetId = _targetId;
-		return ServerPacket::Create<Opcode::LOBBY_REMOVE_OUTGOING_FRIEND_RSP>(rsp);
+
+		auto packet = ServerPacket::Create<Opcode::LOBBY_REMOVE_OUTGOING_FRIEND_RSP>();
+		
+		packet.WriteInt(_targetId);
+
+		return packet;
 	};
 private:
 	uint32_t _targetId;

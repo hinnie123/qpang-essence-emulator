@@ -13,15 +13,18 @@ public:
 	EquipWeaponResponseEvent(std::array<uint64_t, 4> equipment, uint16_t characterOffset) { _equipment = equipment; _characterOffset = characterOffset; };
 
 	ServerPacket Compose(LobbySession* session) override {
-		Packets::Lobby::EquipWeaponRsp rsp{};
+		
+		auto packet = ServerPacket::Create<Opcode::LOBBY_EQUIP_WEAPON_RSP>();
 
-		rsp.characterOffset = _characterOffset;
-		rsp.primary_card = _equipment[0];
-		rsp.secondary_card = _equipment[1];
-		rsp.melee_card = _equipment[3];
-		rsp.throw_card = _equipment[2];
+		packet.WriteShort(_characterOffset);
 
-		return ServerPacket::Create<Opcode::LOBBY_EQUIP_WEAPON_RSP>(rsp);
+		for (size_t i = 0; i < 4; i++)
+		{
+			packet.WriteLong(_equipment[i]);
+			packet.WriteLong(0);
+		}
+
+		return packet;
 	};
 private:
 	std::array<uint64_t, 4> _equipment;

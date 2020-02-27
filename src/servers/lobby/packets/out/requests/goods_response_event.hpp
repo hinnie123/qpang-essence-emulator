@@ -13,25 +13,26 @@ public:
 	GoodsResponseEvent(std::vector<ShopItem> items) { _items = items; };
 
 	ServerPacket Compose(LobbySession* session) override {
-		Packets::Lobby::NormalGoodList rsp{};
-		rsp.unknown = _items.size();
-		rsp.totalCount = _items.size();
-		rsp.countInPacket = _items.size();
+
+		auto packet = ServerPacket::Create<Opcode::LOBBY_NORMAL_GOODS>();
+
+		packet.WriteShort(_items.size());
+		packet.WriteShort(_items.size());
+		packet.WriteShort(_items.size());;
 
 		for (size_t i = 0; i < _items.size(); i++)
 		{
-			Packets::Lobby::NormalGoodList::NormalGood good = rsp.goods[i];
-			ShopItem item = _items.at(i);
-			good.goodId = item.sequenceId;
-			good.unk_01 = item.itemId;
-			good.payType = item.payType;
-			good.price = item.price;
-			good.stock = item.stock;
-			good.category = item.state;
-			rsp.goods[i] = good;
+			ShopItem item = _items.at(i); 
+			
+			packet.WriteInt(item.sequenceId);
+			packet.WriteInt(item.itemId);
+			packet.WriteFlag(item.payType); // is cash
+			packet.WriteInt(item.price);
+			packet.WriteInt(item.stock);
+			packet.WriteByte(item.state);
 		}
 
-		return ServerPacket::Create<Opcode::LOBBY_NORMAL_GOODS>(rsp);
+		return packet;
 	};
 private:
 	std::vector<ShopItem> _items;

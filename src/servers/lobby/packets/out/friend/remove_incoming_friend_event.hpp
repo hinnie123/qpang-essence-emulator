@@ -13,12 +13,14 @@ public:
 	RemoveIncomingFriendEvent(uint32_t targetId, std::string nickname) { _targetId = targetId; _nickname = nickname; };
 
 	ServerPacket Compose(LobbySession* session) override {
-		Packets::Lobby::RemoveIncomingFriend rsp{};
 
-		rsp.playerId = _targetId;
-		wcsncpy(rsp.nickname, std::wstring(_nickname.begin(), _nickname.end()).data(), 16);
+		auto packet = ServerPacket::Create<Opcode::LOBBY_REMOVE_INCOMING_FRIEND>();
+	
+		packet.WriteInt(_targetId);
+		packet.WriteLong(0); // unknown
+		packet.WriteUtf16String(StringConverter::Utf8ToUtf16(_nickname), 16);
 
-		return ServerPacket::Create<Opcode::LOBBY_REMOVE_INCOMING_FRIEND>(rsp);
+		return packet;
 	};
 private:
 	uint32_t _targetId;

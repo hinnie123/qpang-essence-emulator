@@ -12,10 +12,12 @@ public:
 	CharacterResponseEvent(uint16_t characterOffset) { _characterOffset = characterOffset; };
 
 	ServerPacket Compose(LobbySession* session) override {
-		Packets::Lobby::CharacterChangeRsp rsp{};
 
-		rsp.characterId = _characterOffset;
-		return ServerPacket::Create<Opcode::LOBBY_SWAP_CHARACTER_RSP>(rsp);
+		auto packet = ServerPacket::Create<Opcode::LOBBY_SWAP_CHARACTER_RSP>();
+
+		packet.WriteShort(_characterOffset);
+
+		return packet;
 	};
 private:
 	uint16_t _characterOffset;

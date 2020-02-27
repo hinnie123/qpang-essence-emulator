@@ -15,10 +15,13 @@ public:
 	OutgoingFriendDeniedEvent(uint32_t playerId, std::string nickname) { _playerId = playerId; _nickname = nickname; };
 
 	ServerPacket Compose(LobbySession* session) override {
-		Packets::Lobby::DenyFriendRequestTargetRsp rsp{};
-		rsp.pendingFriendId = _playerId;
-		wcsncpy(rsp.nickname, std::wstring(_nickname.begin(), _nickname.end()).data(), 16);
-		return ServerPacket::Create<Opcode::LOBBY_OUTGOING_FRIEND_DENIED>(rsp);
+		auto packet = ServerPacket::Create<Opcode::LOBBY_OUTGOING_FRIEND_DENIED>();
+
+		packet.WriteInt(_playerId);
+		packet.WriteLong(0); // unknown
+		packet.WriteUtf16String(StringConverter::Utf8ToUtf16(_nickname), 16);
+
+		return packet;
 	};
 private:
 	uint32_t _playerId;

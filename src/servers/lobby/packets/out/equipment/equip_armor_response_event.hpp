@@ -14,19 +14,17 @@ public:
 	EquipArmorResponseEvent(std::array<uint64_t, 9> equipment, uint16_t characterOffset) { _equipment = equipment; _characterOffset = characterOffset; };
 
 	ServerPacket Compose(LobbySession* session) override {
-		Packets::Lobby::EquipArmourRsp rsp{};
 
-		rsp.characterOffset = _characterOffset;
-		rsp.head = _equipment[EquipmentManager::HEAD];
-		rsp.face = _equipment[EquipmentManager::FACE];
-		rsp.body = _equipment[EquipmentManager::BODY];
-		rsp.hands = _equipment[EquipmentManager::HAND];
-		rsp.pants = _equipment[EquipmentManager::BOTTOM];
-		rsp.shoes = _equipment[EquipmentManager::FOOT];
-		rsp.back = _equipment[EquipmentManager::BACK];
-		rsp.side = _equipment[EquipmentManager::SIDE];
+		auto packet = ServerPacket::Create<Opcode::LOBBY_EQUIP_ARMOUR_RSP>();
 
-		return ServerPacket::Create<Opcode::LOBBY_EQUIP_ARMOUR_RSP>(rsp);
+		packet.WriteShort(_characterOffset);
+
+		for (size_t i = 0; i < 8; i++)
+		{
+			packet.WriteLong(_equipment[i]);
+		}
+
+		return packet;
 	};
 private:
 	std::array<uint64_t, 9> _equipment;

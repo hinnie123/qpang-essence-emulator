@@ -17,24 +17,34 @@ public:
 	ServerPacket Compose(LobbySession* session) override {
 		Packets::Lobby::OpenPlayerCardRsp rsp{};
 
-		rsp.giftId = _card.id;
-		rsp.don = _don;
-		rsp.cardAmount = 1;
-		rsp.card.cardId = _card.id;
-		rsp.card.itemId = _card.itemId;
-		rsp.card.opened = true;
-		rsp.card.dateReceived = _card.timeCreated;
-		rsp.card.type = _card.itemType;
-		rsp.card.periodType = _card.periodType;
-		rsp.card.period = _card.period;
-		rsp.card.giftable = _card.giftable;
-		rsp.card.boostLevel = _card.boostLevel;
-		rsp.card.isBoosted = _card.boosted;
-		rsp.card.hidden = false;
-		rsp.card.unknown04 = 2; // ?
-		rsp.card.unknown05 = 1; // ?
+		auto packet = ServerPacket::Create<Opcode::LOBBY_OPEN_PLAYER_CARD_RSP>();
 
-		return ServerPacket::Create<Opcode::LOBBY_OPEN_PLAYER_CARD_RSP>(rsp);
+		packet.WriteInt(_card.id);
+		packet.WriteInt(_don);
+
+		packet.WriteInt(1); // card count
+		
+		packet.WriteLong(_card.id);
+		packet.WriteInt(_card.itemId);
+		packet.WriteByte(0); // unknown;
+		packet.WriteByte(_card.itemType);
+		packet.WriteByte(0); // unknown
+		packet.WriteFlag(_card.giftable);
+		packet.WriteEmpty(6);
+		packet.WriteInt(_card.timeCreated);
+		packet.WriteFlag(true); // opened
+		packet.WriteShort(0); // unknown
+		packet.WriteFlag(false); // hidden
+		packet.WriteByte(2); // unknown
+		packet.WriteShort(_card.period);
+		packet.WriteByte(_card.periodType);
+		packet.WriteFlag(true); // unknown
+		packet.WriteShort(_card.boostLevel);
+		packet.WriteFlag(_card.boosted);
+		packet.WriteFlag(false); // unknown
+		packet.WriteInt(0); // unknown
+
+		return packet;
 	};
 private:
 	InventoryCard _card;
