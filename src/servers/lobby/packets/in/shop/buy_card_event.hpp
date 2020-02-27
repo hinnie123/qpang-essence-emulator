@@ -25,8 +25,11 @@ public:
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
 		auto packet = pack.Read<Packets::Lobby::BuyItem>();
+
 		uint32_t sequenceId = pack.ReadInt();
-		pack.Skip(4);
+
+		/* Ignore these values */
+		uint32_t unk01 = pack.ReadInt();
 		bool isCash = pack.ReadFlag();
 		uint16_t price = pack.ReadShort();
 

@@ -21,12 +21,28 @@ public:
 	{
 		auto packet = pack.Read<Packets::Lobby::EquipWeapon>();
 
+		uint16_t character = pack.ReadShort();
+
+		uint64_t primaryWeapon = pack.ReadLong();
+		uint64_t primaryWeaponUnk = pack.ReadLong();
+
+		uint64_t secondaryWeapon = pack.ReadLong();
+		uint64_t secondaryWeaponUnk = pack.ReadLong();
+
+		uint64_t throwingWeapon = pack.ReadLong();
+		uint64_t throwingWeaponUnk = pack.ReadLong();
+
+		uint64_t meleeWeapon = pack.ReadLong();
+		uint64_t meleeWeaponUnk = pack.ReadLong();
+
+		uint32_t unk01 = pack.ReadInt();
+
 		uint16_t characterOffset = session->Equipment()->GetCharacterIndex(session->Info()->Character());
 
-		session->Equipment()->SetEquipmentPart((EquipmentManager::Character)characterOffset, EquipmentManager::EquipmentSlot::PRIMARY, packet.primary_card);
-		session->Equipment()->SetEquipmentPart((EquipmentManager::Character)characterOffset, EquipmentManager::EquipmentSlot::SECONDARY, packet.secondary_card);
-		session->Equipment()->SetEquipmentPart((EquipmentManager::Character)characterOffset, EquipmentManager::EquipmentSlot::MELEE, packet.melee_card);
-		session->Equipment()->SetEquipmentPart((EquipmentManager::Character)characterOffset, EquipmentManager::EquipmentSlot::THROW, packet.throw_card);
+		session->Equipment()->SetEquipmentPart((EquipmentManager::Character)characterOffset, EquipmentManager::EquipmentSlot::PRIMARY, primaryWeapon);
+		session->Equipment()->SetEquipmentPart((EquipmentManager::Character)characterOffset, EquipmentManager::EquipmentSlot::SECONDARY, secondaryWeapon);
+		session->Equipment()->SetEquipmentPart((EquipmentManager::Character)characterOffset, EquipmentManager::EquipmentSlot::MELEE, meleeWeapon);
+		session->Equipment()->SetEquipmentPart((EquipmentManager::Character)characterOffset, EquipmentManager::EquipmentSlot::THROW, throwingWeapon);
 
 		std::array<uint64_t, 4> equipment = session->Equipment()->GetWeapons((EquipmentManager::Character)characterOffset);
 

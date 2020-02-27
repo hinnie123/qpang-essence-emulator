@@ -29,7 +29,14 @@ public:
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
 		auto packet = pack.Read<Packets::Lobby::FriendRequest>();
-		std::string targetNickname = StringConverter::WcharToString(packet.username, 16);
+
+		pack.Skip(12);
+		std::u16string nickname = pack.ReadUtf16String(16);
+		uint32_t unk01 = pack.ReadInt();
+
+		//TODO: Cleanup this shit code
+		std::string targetNickname = StringConverter::Utf16ToUtf8(nickname);
+
 		bool validName = session->GetLobby()->ValidateNickname(targetNickname);
 
 		if(session->Friends()->List().size() >= MAX_FRIENDS)

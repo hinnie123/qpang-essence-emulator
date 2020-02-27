@@ -28,7 +28,7 @@ public:
 	ServerPacket* WriteShort(uint16_t value);
 	ServerPacket* WriteByte(uint8_t value);
 	ServerPacket* WriteFlag(bool value);
-	ServerPacket* WriteEmpty(uint32_t amount);
+	ServerPacket* WriteEmpty(uint32_t amount, uint8_t val = 0x00);
 	
 	template<typename T, size_t N>
 	ServerPacket* WriteArray(std::array<T, N> arr)

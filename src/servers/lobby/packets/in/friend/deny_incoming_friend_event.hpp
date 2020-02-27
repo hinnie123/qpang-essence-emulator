@@ -15,12 +15,14 @@ public:
 	DenyIncomingFriendEvent() : LobbyPacketEvent(sizeof(Packets::Lobby::DenyFriendRequest)) {};
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
-		auto packet = pack.Read<Packets::Lobby::DenyFriendRequest>();
-		if (!session->Friends()->HasFriend(packet.playerId))
+		uint32_t playerId = pack.ReadInt();
+		pack.Skip(46);
+
+		if (!session->Friends()->HasFriend(playerId))
 			return;
 
-		session->Friends()->RemoveFriend(packet.playerId);
-		auto target = session->GetLobby()->FindSession(packet.playerId);
+		session->Friends()->RemoveFriend(playerId);
+		auto target = session->GetLobby()->FindSession(playerId);
 
 		if (target != nullptr)
 		{
@@ -28,7 +30,7 @@ public:
 			target->Send(OutgoingFriendDeniedEvent{ session->Info()->Id(), session->Info()->Nickname() }.Compose(target.get()));
 		}
 
-		session->Send(DenyIncomingFriendResponseEvent{ packet.playerId }.Compose(session));
+		session->Send(DenyIncomingFriendResponseEvent{ playerId }.Compose(session));
 	}
 };
 

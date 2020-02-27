@@ -91,9 +91,9 @@ ServerPacket* ServerPacket::WriteFlag(bool value)
 	return this;
 }
 
-ServerPacket* ServerPacket::WriteEmpty(uint32_t amount)
+ServerPacket* ServerPacket::WriteEmpty(uint32_t amount, uint8_t val)
 {
-	buffer.resize(buffer.size() + amount);
+	buffer.resize(buffer.size() + amount, val);
 
 	m_bufferPosition += amount;
 
