@@ -415,20 +415,6 @@ namespace Packets
 			uint64_t melee_card;
 			uint64_t unknown4;
 		};
-		struct EquipArmour : ClientPacketData
-		{
-			uint16_t characterOffset;
-			uint64_t head;
-			uint64_t face;
-			uint64_t body;
-			uint64_t hands;
-			uint64_t pants;
-			uint64_t shoes;
-			uint64_t back;
-			uint64_t side;
-			uint64_t unk_part;
-			uint32_t unk_01;
-		};
 		struct EquipArmourRsp : ServerPacketData
 		{
 			uint16_t characterOffset;

@@ -18,9 +18,10 @@ public:
 	PlayerInfoEvent() : LobbyPacketEvent(sizeof(Packets::Lobby::RequestPlayerInfo)) {};
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
-		auto packet = pack.Read<Packets::Lobby::RequestPlayerInfo>();
+		uint32_t playerId = pack.ReadInt();
+		pack.Skip(38);
 
-		auto target = session->GetLobby()->FindSession(packet.targetId);
+		auto target = session->GetLobby()->FindSession(playerId);
 		if (target != nullptr)
 		{
 			std::array<uint32_t, 13> equipmentItems;
@@ -44,7 +45,7 @@ public:
 		}
 		else
 		{
-			OfflinePlayer offlinePlayer = session->GetLobby()->GetOfflinePlayer(packet.targetId, OfflinePlayer::Type::MEDIUM);
+			OfflinePlayer offlinePlayer = session->GetLobby()->GetOfflinePlayer(playerId, OfflinePlayer::Type::MEDIUM);
 			if (offlinePlayer.playerId != NULL)
 			{
 				session->Send(PlayerInfoResponseEvent{offlinePlayer.playerId, offlinePlayer.nickname, offlinePlayer.level, offlinePlayer.rank, offlinePlayer.character

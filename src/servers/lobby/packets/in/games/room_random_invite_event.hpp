@@ -8,7 +8,8 @@ class RoomRandomInviteEvent : public LobbyPacketEvent {
 public:
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
-		auto data = pack.Read<Packets::Lobby::RoomRandomInvite>();
+		uint32_t roomId = pack.ReadInt();
+		uint32_t unk01 = pack.ReadInt();
 	}
 };
 

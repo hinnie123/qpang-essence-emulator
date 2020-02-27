@@ -12,7 +12,7 @@
 class EquipArmorEvent : public LobbyPacketEvent {
 
 public:
-	EquipArmorEvent() : LobbyPacketEvent(sizeof(Packets::Lobby::EquipArmour)) {};
+	EquipArmorEvent() : LobbyPacketEvent() {};
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
 		uint16_t characterOffset = session->Equipment()->GetCharacterIndex(session->Info()->Character());

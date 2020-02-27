@@ -21,19 +21,17 @@ public:
 		std::u16string nickname = pack.ReadUtf16String(16);
 		std::u16string message = pack.ReadUtf16String(length);
 
-		// TODO: this
-		//auto target = session->GetLobby()->FindSession(StringConverter::Utf16ToUtf8(nickname));
-		//if (target != nullptr)
-		//{
-		//	std::string senderNickname = session->Info()->Nickname();
-		//	auto packet = WhisperReceivedEvent{ senderNickname, message };
-		//	auto rspPacket = WhisperResponseEvent{ targetNickname, message };
-		//
-		//	target->Send(packet.Compose(target.get()));
-		//	session->Send(rspPacket.Compose(session));
-		//}
-		//else
-		//	session->Send(WhisperFailEvent{ 719 }.Compose(session)); // 718 = FR_MSG_REFUSE_WHISPER, 719 = FR_MSG_NOT_CONNECTED. Should be self-explanatory.
+		auto target = session->GetLobby()->FindSession(StringConverter::Utf16ToUtf8(nickname));
+
+		if (target == nullptr)
+			return session->Send(WhisperFailEvent{ 719 }.Compose(session));
+
+		std::string senderNickname = session->Info()->Nickname();
+		auto packet = WhisperReceivedEvent{ senderNickname, StringConverter::Utf16ToUtf8(message) };
+		auto rspPacket = WhisperResponseEvent{ StringConverter::Utf16ToUtf8(nickname), StringConverter::Utf16ToUtf8(message) };
+
+		target->Send(packet.Compose(target.get()));
+		session->Send(rspPacket.Compose(session));
 	}
 };
 

@@ -19,8 +19,6 @@ public:
 
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
-		auto packet = pack.Read<Packets::Lobby::EquipWeapon>();
-
 		uint16_t character = pack.ReadShort();
 
 		uint64_t primaryWeapon = pack.ReadLong();
