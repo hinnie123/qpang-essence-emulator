@@ -21,12 +21,15 @@ class BuyCardEvent : public LobbyPacketEvent {
 	};
 
 public:
-	BuyCardEvent() : LobbyPacketEvent(sizeof(Packets::Lobby::BuyItem)) {};
+	BuyCardEvent() : LobbyPacketEvent() {};
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
 		auto packet = pack.Read<Packets::Lobby::BuyItem>();
+		uint32_t sequenceId = pack.ReadInt();
+		pack.Skip(4);
+		bool isCash = pack.ReadFlag();
+		uint16_t price = pack.ReadShort();
 
-		uint32_t sequenceId = packet.goodId;
 		ShopItem itemToBuy = session->GetLobby()->Shop()->GetItemBySequenceId(sequenceId);
 
 		if (itemToBuy.soldCount >= itemToBuy.stock)

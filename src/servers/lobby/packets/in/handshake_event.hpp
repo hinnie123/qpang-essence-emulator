@@ -12,7 +12,6 @@ public:
 
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
-		auto keyExchange = pack.Read<Packets::Handshake::KeyExchange>(NULL);
 		session->Send(HandshakeResponseEvent{}.Compose(session), BlowfishContext::CryptoType::PUBLIC);
 	}
 };

@@ -44,7 +44,7 @@ public:
 			return sLogger->Get()->critical("lobby host or game version not set in database");
 
 		//Players should not be able to login from different game versions.
-		if (std::to_string(gameVersion) == strVersion)
+		if (std::to_string(gameVersion) != strVersion)
 		{
 			//sLogger->Get()->info("LoginEvent: {0} tried logging in with an illegal game version", username);
 			auto loginErrorEvent = LoginErrorEvent{ ErrorCode::VERSION }.Compose(conn);
