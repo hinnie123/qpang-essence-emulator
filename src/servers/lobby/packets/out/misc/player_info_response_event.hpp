@@ -27,29 +27,58 @@ public:
 
 	ServerPacket Compose(LobbySession* session) override 
 	{
-		Packets::Lobby::RequestPlayerInfoRsp rsp{};
+		auto packet = ServerPacket::Create<Opcode::LOBBY_PLAYERINFO_RSP>();
 
-		rsp.userId = _playerId;
-		rsp.level = _level;
-		rsp.rank = _rank;
-		rsp.exp = _experience;
-		wcsncpy(rsp.nickname, std::wstring(_nickname.begin(), _nickname.end()).data(), 16);
+		packet.WriteInt(_playerId);
+		packet.WriteEmpty(42);
+		packet.WriteUtf16String(StringConverter::Utf8ToUtf16(_nickname), 16); // TODO: Change this
+		packet.WriteInt(0); // playtime
+		packet.WriteEmpty(4); // unknown
+		packet.WriteByte(_level);
+		packet.WriteByte(_rank);
+		
+		// Character information
+		packet.WriteShort(_character);
+		
+		for (size_t i = 0; i < 9; i++)
+		{
+			packet.WriteInt(_equipment[i]);
+		}
 
-		rsp.character.characterId = _character;
-		rsp.character.head = _equipment[EquipmentManager::HEAD];
-		rsp.character.face = _equipment[EquipmentManager::FACE];
-		rsp.character.body = _equipment[EquipmentManager::BODY];
-		rsp.character.hands = _equipment[EquipmentManager::HAND];
-		rsp.character.pants = _equipment[EquipmentManager::BOTTOM];
-		rsp.character.boots = _equipment[EquipmentManager::FOOT];
-		rsp.character.back = _equipment[EquipmentManager::BACK];
-		rsp.character.side = _equipment[EquipmentManager::SIDE ];
-		rsp.character.primaryWeapon.itemId = _equipment[EquipmentManager::PRIMARY];
-		rsp.character.secondaryWeapon.itemId = _equipment[EquipmentManager::SECONDARY];
-		rsp.character.meleeWeapon.itemId = _equipment[EquipmentManager::MELEE];
-		rsp.character.throwWeapon.itemId = _equipment[EquipmentManager::THROW];
+		for (size_t i = 9; i < _equipment.size(); i++)
+		{
+			packet.WriteInt(_equipment[i]);
+			packet.WriteInt(0); // unknown
+		}
 
-		return ServerPacket::Create<Opcode::LOBBY_PLAYERINFO_RSP>(rsp);
+		packet.WriteEmpty(40);
+		packet.WriteInt(_experience);
+
+		packet.WriteInt(0); // unknown
+		packet.WriteInt(0); // unknown
+		packet.WriteInt(0); // unknown
+		packet.WriteInt(0); // unknown
+		packet.WriteInt(0); // unknown
+		packet.WriteInt(0); // unknown
+		packet.WriteInt(0); // unknown
+		packet.WriteInt(0); // unknown
+		packet.WriteInt(0); // unknown
+		packet.WriteInt(0); // unknown
+
+		packet.WriteShort(1000); // slacker points
+
+		packet.WriteInt(1); // unknown
+
+		packet.WriteInt(2); // leaderboard rank
+		packet.WriteInt(4); // leaderboard gained
+
+		for (size_t i = 0; i < 40; i++)
+		{
+			packet.WriteInt(0); // title id
+			packet.WriteInt(0); // unknown
+		}
+
+		return packet;
 	};
 
 private:

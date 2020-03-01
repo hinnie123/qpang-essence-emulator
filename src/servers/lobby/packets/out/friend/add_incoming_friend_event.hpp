@@ -14,14 +14,19 @@ public:
 	AddIncomingFriendEvent(Friend theFriend) { _friend = theFriend; };
 
 	ServerPacket Compose(LobbySession* session) override {
-		Packets::Lobby::AddIncomingFriend rsp{};
-		rsp.buddy.id = _friend.toPlayerId;
-		rsp.buddy.level = _friend.level;
-		rsp.buddy.friendState = FriendManager::State::INCOMING;
-		wcsncpy(rsp.buddy.name, std::wstring(_friend.nickname.begin(), _friend.nickname.end()).data(), 16);
-		rsp.buddy.isOnline = true;
 
-		return ServerPacket::Create<Opcode::LOBBY_ADD_INCOMING_FRIEND>(rsp);
+
+		auto packet = ServerPacket::Create<Opcode::LOBBY_FRIEND_INVITE_RSP>();
+
+		 packet.WriteInt(_friend.toPlayerId);
+		 packet.WriteShort(0); // unknown
+		 packet.WriteShort(0); // unknown
+		 packet.WriteByte(_friend.state);
+		 packet.WriteFlag(true);
+		 packet.WriteShort(_friend.level);
+		 packet.WriteUtf16String(StringConverter::Utf8ToUtf16(_friend.nickname), 16);
+
+		 return packet;
 	};
 private:
 	Friend _friend;

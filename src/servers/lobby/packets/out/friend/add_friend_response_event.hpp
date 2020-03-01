@@ -15,15 +15,18 @@ public:
 	AddFriendResponseEvent(Friend theFriend, bool isOnline, wchar_t nickname[17]) { _friend = theFriend; _isOnline = isOnline; wcscpy(_nickname, nickname); };
 
 	ServerPacket Compose(LobbySession* session) override {
-		Packets::Lobby::AcceptFriendRequestRsp rsp{};
-		
-		rsp.newFriend.friendId = _friend.toPlayerId;
-		wcsncpy(rsp.newFriend.friendName, std::wstring(_friend.nickname.begin(), _friend.nickname.end()).data(), 16);
-		rsp.newFriend.isOnline = _isOnline;
-		rsp.newFriend.friendLevel = _friend.level;
-		rsp.newFriend.friendState = FriendManager::State::OUTGOING;
 
-		return ServerPacket::Create<Opcode::LOBBY_FRIEND_INVITE_RSP>(rsp);
+		auto packet = ServerPacket::Create<Opcode::LOBBY_FRIEND_INVITE_RSP>();
+
+		packet.WriteInt(_friend.toPlayerId);
+		packet.WriteShort(0); // unknown
+		packet.WriteShort(0); // unknown
+		packet.WriteByte(_friend.state);
+		packet.WriteFlag(_isOnline);
+		packet.WriteShort(_friend.level);
+		packet.WriteUtf16String(StringConverter::Utf8ToUtf16(_friend.nickname), 16);
+
+		return packet;
 	};
 private:
 	Friend _friend;

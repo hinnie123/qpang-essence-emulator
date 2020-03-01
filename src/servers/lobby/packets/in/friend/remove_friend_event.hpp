@@ -15,18 +15,18 @@ public:
 	RemoveFriendEvent() : LobbyPacketEvent(sizeof(Packets::Lobby::RemoveFriend)) {};
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
-		auto packet = pack.Read<Packets::Lobby::RemoveFriend>();
+		uint32_t playerId = pack.ReadInt();
 		
-		auto target = session->GetLobby()->FindSession(packet.removedFriendId);
+		auto target = session->GetLobby()->FindSession(playerId);
 
-		session->Friends()->RemoveFriend(packet.removedFriendId);
+		session->Friends()->RemoveFriend(playerId);
 		if (target != nullptr)
 		{
 			target->Friends()->RemoveFriend(session->Info()->Id());
 			target->Send(FriendRemovedFriendEvent{ session->Info()->Id(), session->Info()->Nickname() }.Compose(target.get()));
 		}
 
-		session->Send(RemoveFriendResponseEvent{ packet.removedFriendId }.Compose(session));		
+		session->Send(RemoveFriendResponseEvent{ playerId }.Compose(session));
 	}
 };
 

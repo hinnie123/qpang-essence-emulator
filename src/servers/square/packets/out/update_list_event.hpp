@@ -22,14 +22,18 @@ public:
 
 	ServerPacket Compose(SquareSession* session) override
 	{
-		Packets::Square::ParkUpdateParkList rsp{};
-		rsp.parkId = _square->Id();
-		rsp.cmd = _command;
-		wcscpy(rsp.name, StringConverter::StringToWChar(_square->Name()));
-		rsp.currPlayers = _square->Size();
-		rsp.maxPlayers = _square->MaxCapacity();
-		rsp.state = _square->State();
-		return ServerPacket::Create<Opcode::SQUARE_UPDATE_LIST>(rsp);
+		auto packet = ServerPacket::Create< Opcode::SQUARE_UPDATE_LIST>();
+
+		packet.WriteInt(_command);
+		packet.WriteEmpty(5);
+		packet.WriteInt(_square->Id());
+		packet.WriteByte(_square->MaxCapacity());
+		packet.WriteByte(_square->List().size());
+		packet.WriteByte(_square->State());
+		packet.WriteUtf16String(StringConverter::Utf8ToUtf16(_square->Name()), 16);
+		packet.WriteEmpty(33);
+
+		return packet;
 	}
 private:
 	Square::Ptr _square;

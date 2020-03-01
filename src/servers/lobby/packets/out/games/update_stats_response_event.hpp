@@ -15,13 +15,26 @@ public:
 
 	ServerPacket Compose(LobbySession* session) override
 	{
-		Packets::Lobby::UpdatePlayerStats rsp{};
+		auto packet = ServerPacket::Create<Opcode::LOBBY_ROOM_REQUEST_STATS_RSP>();
 
-		rsp.don = session->Info()->Don();
-		rsp.experience = session->Info()->Experience();
-		rsp.coins = session->Info()->Coins();
+		packet.WriteInt(session->Info()->Id());
+		packet.WriteInt(session->Info()->Experience());
+		packet.WriteInt(session->Info()->Don());
+		packet.WriteInt(0); // unknown
+		packet.WriteInt(0); // kills
+		packet.WriteInt(0); // deaths
+		packet.WriteInt(0); // team game win
+		packet.WriteInt(0); // team game lose
+		packet.WriteInt(0); // team game draw
+		packet.WriteInt(0); // unknown
+		packet.WriteInt(0); // mission game win
+		packet.WriteInt(0); // mission game lose
+		packet.WriteInt(0); // mission game draw
+		packet.WriteEmpty(72);
+		packet.WriteInt(0); // slacker points
+		packet.WriteInt(session->Info()->Coins());
 
-		return ServerPacket::Create<Opcode::LOBBY_ROOM_REQUEST_STATS_RSP>(rsp);
+		return packet;
 	}
 private:
 };

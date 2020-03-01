@@ -15,13 +15,14 @@
 class OpenMemoEvent : public LobbyPacketEvent {
 
 public:
-	OpenMemoEvent() : LobbyPacketEvent(sizeof(Packets::Lobby::ReadMemo)) {};
+	OpenMemoEvent() : LobbyPacketEvent() {};
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
-		auto packet = pack.Read<Packets::Lobby::ReadMemo>();
+		uint64_t memoId = pack.ReadLong();
+		uint32_t unk01 = pack.ReadInt();
 
-		session->Messenger()->OpenMemo(packet.memoId);
-		session->Send(OpenMemoResponseEvent{ static_cast<uint32_t>(packet.memoId) }.Compose(session));
+		session->Messenger()->OpenMemo(memoId);
+		session->Send(OpenMemoResponseEvent{ static_cast<uint32_t>(memoId) }.Compose(session));
 	}
 };
 

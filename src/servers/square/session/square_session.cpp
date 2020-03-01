@@ -37,5 +37,6 @@ void SquareSession::HandleClose()
 
 void SquareSession::Whisper(std::string message)
 {
-	Send(ChatResponseEvent{ Info()->Nickname(), std::string("(Whisper): ").append(message) }.Compose(this));
+
+	//Send(ChatResponseEvent{ Info()->Nickname(), std::u16string(u"(Whisper): ").append(message) }.Compose(this));
 }

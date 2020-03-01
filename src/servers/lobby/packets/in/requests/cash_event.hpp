@@ -14,9 +14,7 @@ public:
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
 		uint32_t cash = session->Info()->Cash();
-		//std::vector<ShopItem> items = session->GetLobby()->Shop()->List();
 		session->Send(CashResponseEvent{ cash }.Compose(session));
-		//session->Send(GoodsEvent{ items }.Compose(session));
 	}
 };
 

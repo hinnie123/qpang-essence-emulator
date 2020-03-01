@@ -20,13 +20,14 @@ public:
 
 	ServerPacket Compose(SquareSession* session) override
 	{
-		Packets::Square::ParkMovePlayer rsp{};
-		rsp.moveDirection = _moveDirection;
-		rsp.moveType = _moveType;
-		rsp.position = _position;
-		rsp.targetId = _playerId;
+		auto packet = ServerPacket::Create<Opcode::SQUARE_MOVE_PLAYER>();
 
-		return ServerPacket::Create<Opcode::SQUARE_MOVE_PLAYER>(rsp);
+		packet.WriteInt(_playerId);
+		packet.WriteByte(_moveType);
+		packet.WriteByte(_moveDirection);
+		packet.WriteArray<float, 3>(_position);
+
+		return packet;
 	};
 private:
 	uint32_t _playerId;

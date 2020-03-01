@@ -15,9 +15,11 @@ public:
 
 	ServerPacket Compose(SquareSession* session) override
 	{
-		Packets::Square::ParkRemovePlayer rsp{};
-		rsp.playerToRemove = _playerId;
-		return ServerPacket::Create<Opcode::SQUARE_REMOVE_PLAYER>(rsp);
+		auto packet = ServerPacket::Create<Opcode::SQUARE_REMOVE_PLAYER>();
+
+		packet.WriteInt(_playerId);
+
+		return packet;
 	}
 private:
 	uint32_t _playerId;

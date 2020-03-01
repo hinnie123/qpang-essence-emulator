@@ -30,6 +30,7 @@ void Connection::SendPacket(ServerPacket packet, BlowfishContext::CryptoType cry
 	if (this == nullptr)
 		return;
 
+	packet.WritePayloadHeader({ static_cast<uint16_t>(packet.buffer.size() + 4), packet.GetOpcode() });
 
 	packet.AppendChecksum();
 
@@ -166,6 +167,7 @@ void Connection::OnHeaderRead(const ErrorCode& ec)
 	}
 
 	_inPacket.buffer.resize(_inPacket.header.fullLength - 4);
+	_inPacket.SetBufferPosition(8);
 
 	try
 	{

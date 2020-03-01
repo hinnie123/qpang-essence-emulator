@@ -14,10 +14,12 @@ public:
 
 	ServerPacket Compose(SquareSession* session) override
 	{
-		Packets::Square::ParkEmotePlayer rsp{};
-		rsp.playerId = _playerId;
-		rsp.emoteId = _emoteId;
-		return ServerPacket::Create<Opcode::SQUARE_EMOTE_PLAYER>(rsp);
+		auto packet = ServerPacket::Create<Opcode::SQUARE_EMOTE_PLAYER>();
+
+		packet.WriteInt(_playerId);
+		packet.WriteInt(_emoteId);
+
+		return packet;
 	};
 private:
 	uint32_t _playerId;

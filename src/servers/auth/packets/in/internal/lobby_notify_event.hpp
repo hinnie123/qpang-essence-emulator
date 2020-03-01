@@ -2,6 +2,7 @@
 #define LOBBY_NOTIFY_EVENT_HPP
 
 #include <cstdint>
+#include <array>
 
 #include "packet_event.hpp"
 #include "packet_data.hpp"
@@ -14,12 +15,15 @@ class LobbyNotifyEvent : public PacketEvent {
 public:
 	void Read(Connection::Ptr conn, ClientPacket& pack) override
 	{
-		auto lobbyNotify = pack.Read<Packets::Auth::LobbyNotify>();
 		auto lobbyServer = AuthManager::Instance()->GetLobby();
+
+		std::array<uint8_t, 16> uuid = pack.ReadArray<uint8_t, 16>();
+
 		boost::uuids::uuid u;
-		memcpy(&u, &lobbyNotify.uuid, 16);
+		memcpy(&u, &uuid, 16);
+
 		uint32_t userId = AuthManager::Instance()->ValidateSession(u);
-		lobbyServer->SendPacket(LobbyNotifyResponseEvent{ userId, lobbyNotify.uuid }.Compose(conn));
+		lobbyServer->SendPacket(LobbyNotifyResponseEvent{ userId, uuid }.Compose(conn));
 	}
 };
 

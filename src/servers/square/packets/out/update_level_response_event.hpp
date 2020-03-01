@@ -21,12 +21,12 @@ public:
 
 	ServerPacket Compose(SquareSession* session) override
 	{
-		Packets::Square::ChangePlayerLevel rsp{};
+		auto packet = ServerPacket::Create<Opcode::SQUARE_PLAYER_CHANGE_LEVEL>();
 
-		rsp.playerId = _playerId;
-		rsp.level = _level;
+		packet.WriteInt(_playerId);
+		packet.WriteShort(_level);
 
-		return ServerPacket::Create<Opcode::SQUARE_PLAYER_CHANGE_LEVEL>(rsp);
+		return packet;
 	}
 private:
 	uint32_t _playerId;

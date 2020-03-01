@@ -13,11 +13,14 @@
 class OpenGMCardEvent : public LobbyPacketEvent {
 
 public:
-	OpenGMCardEvent() : LobbyPacketEvent{ sizeof(Packets::Lobby::OpenCard) } {};
+	OpenGMCardEvent() : LobbyPacketEvent() {};
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
-		auto packet = pack.Read<Packets::Lobby::OpenCard>();
-		InventoryCard inventoryCard = session->Inventory()->GetItemByCardId(packet.cardId);
+		uint32_t cardId = pack.ReadInt();
+		uint32_t unk01 = pack.ReadInt();
+		uint32_t unk02 = pack.ReadInt();
+
+		InventoryCard inventoryCard = session->Inventory()->GetItemByCardId(cardId);
 		
 		if (session->Inventory()->OpenGift(inventoryCard.id))
 			session->Send(OpenGMCardResponseEvent{ inventoryCard }.Compose(session));

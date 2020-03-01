@@ -15,12 +15,16 @@ public:
 	ReceiveGiftEvent(InventoryCard card, std::string senderName) { _card = card; _senderName = senderName; };
 	
 	ServerPacket Compose(LobbySession* session) override {
-		Packets::Lobby::ReceiveGift rsp{};
-		rsp.cardId = _card.id;
-		rsp.dateReceived = time(NULL);
-		rsp.unknown = 1;
-		wcsncpy(rsp.nickname, std::wstring(_senderName.begin(), _senderName.end()).data(), 16);
-		return ServerPacket::Create<Opcode::LOBBY_RECEIVE_GIFT>(rsp);
+		
+		auto packet = ServerPacket::Create<Opcode::LOBBY_RECEIVE_GIFT>();
+
+		packet.WriteUtf16String(StringConverter::Utf8ToUtf16(_senderName), 16);
+		packet.WriteInt(_card.id);
+		packet.WriteInt(0); // unknown
+		packet.WriteFlag(true); // unknown
+		packet.WriteLong(_card.timeCreated);
+
+		return packet;
 	};
 private:
 	InventoryCard _card;

@@ -15,13 +15,14 @@ public:
 
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
-		auto packet = pack.Read<Packets::Lobby::CharacterChange>();
+		uint16_t characterId = pack.ReadShort();
+		uint32_t unknown = pack.ReadInt();
 
-		if (session->Info()->Character() == packet.characterId)
+		if (session->Info()->Character() == characterId)
 			return; // not supposed to happen.
 
-		uint16_t character = session->Info()->Character(packet.characterId);
-		session->Send(CharacterResponseEvent{ character }.Compose(session));
+		session->Info()->Character(characterId);
+		session->Send(CharacterResponseEvent{ characterId }.Compose(session));
 	}
 };
 

@@ -10,14 +10,14 @@
 class DropCardEvent : public LobbyPacketEvent {
 
 public:
-	DropCardEvent() : LobbyPacketEvent(sizeof(Packets::Lobby::DeleteCard)) {};
+	DropCardEvent() : LobbyPacketEvent() {};
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
-		auto packet = pack.Read<Packets::Lobby::DeleteCard>();
+		uint64_t cardId = pack.ReadLong();
+		uint32_t unk01 = pack.ReadInt();
 
-		uint32_t cardId = packet.cardId;
 		if (session->Inventory()->RemoveItem(cardId))
-			session->Send(DropCardResponseEvent{ cardId }.Compose(session));
+			session->Send(DropCardResponseEvent{ static_cast<uint32_t>(cardId) }.Compose(session));
 
 	}
 };

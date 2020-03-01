@@ -3,9 +3,7 @@
 
 #include "connection.hpp"
 #include "packet_data.hpp"
-
-//fwd
-class ClientPacket;
+#include "client_packet.hpp"
 
 class PacketEvent {
 public:

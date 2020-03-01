@@ -2,6 +2,16 @@
 #include <boost/locale/encoding_utf.hpp>
 
 using boost::locale::conv::utf_to_utf;
+std::string StringConverter::Utf16ToUtf8(std::u16string string)
+{
+	return utf_to_utf<char, char16_t>(string.c_str());
+}
+
+std::u16string StringConverter::Utf8ToUtf16(std::string string)
+{
+	return utf_to_utf<char16_t, char>(string.c_str());
+}
+
 std::wstring StringConverter::StringToWString(std::string string)
 {
 	return utf_to_utf<wchar_t>(string.c_str(), string.c_str() + string.size());

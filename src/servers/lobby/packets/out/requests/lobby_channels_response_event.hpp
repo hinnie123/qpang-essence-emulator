@@ -14,29 +14,29 @@ public:
 	ChannelsResponseEvent(std::vector<Channel> channels) { _channels = channels; };
 
 	ServerPacket Compose(LobbySession* session) override {
-		Packets::Lobby::ChannelsRsp rsp{};
-		
+
+		auto packet = ServerPacket::Create<Opcode::LOBBY_CHANNELS_RSP>();
+
 		uint16_t size = _channels.size();
-		rsp.countInPacket = size;
-		rsp.totalCount = size;
-		rsp.unknown = size;
 
-		for (size_t i = 0; i < size; i++)
+		packet.WriteShort(size);
+		packet.WriteShort(size);
+		packet.WriteShort(size);
+
+		for (uint16_t i = 0; i < size; i++)
 		{
-			Channel channel = _channels[i];
-			if (channel.minRank > session->Info()->Rank())
-				continue;
+			Channel channel = _channels.at(i);
 
-			rsp.channels[i].index = i + 1; // 0 = no channel, if we put index to 0 'already in channel'
-			wcsncpy(rsp.channels[i].name, std::wstring(channel.name.begin(), channel.name.end()).data(), 30);
-			rsp.channels[i].minLevel = channel.minLevel;
-			rsp.channels[i].maxLevel = channel.maxLevel;
-			rsp.channels[i].currPlayers = channel.currPlayers;
-			rsp.channels[i].maxPlayers = channel.maxPlayers;
-			rsp.channels[i].minLevel = channel.minLevel;
+			packet.WriteShort(i + 1);
+			packet.WriteUtf16String(StringConverter::Utf8ToUtf16(channel.name), 30);
+			packet.WriteByte(channel.minLevel);
+			packet.WriteByte(channel.maxLevel);
+			packet.WriteShort(channel.currPlayers);
+			packet.WriteShort(channel.maxPlayers);
+			packet.WriteEmpty(51);
 		}
 
-		return ServerPacket::Create<Opcode::LOBBY_CHANNELS_RSP>(rsp);
+		return packet;
 	};
 private:
 	std::vector<Channel> _channels;

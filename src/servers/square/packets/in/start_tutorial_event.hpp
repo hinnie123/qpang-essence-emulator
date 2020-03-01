@@ -12,15 +12,10 @@ class StartTutorialEvent : public SquarePacketEvent
 	void Read(SquareSession* session, ClientPacket& pack) override
 	{
 		auto square = session->GetSquare();
+		if (square == nullptr) return;
 
-		if (square)
-		{
-			sLogger->Get()->debug("{0} is starting tutorial", session->Info()->Nickname());
-			session->Info()->SetState(ChangePlayerStateEvent::IN_TUTORIAL);
-			square->SendPacket(ChangePlayerStateEvent{ session->Info()->Id(), ChangePlayerStateEvent::IN_TUTORIAL }.Compose(nullptr));
-		}
-		else
-			sLogger->Get()->warn("{0} is starting tutorial, but is not in a square", session->Info()->Nickname());
+		session->Info()->SetState(ChangePlayerStateEvent::IN_TUTORIAL);
+		square->SendPacket(ChangePlayerStateEvent{ session->Info()->Id(), ChangePlayerStateEvent::IN_TUTORIAL }.Compose(nullptr));
 	};
 };
 

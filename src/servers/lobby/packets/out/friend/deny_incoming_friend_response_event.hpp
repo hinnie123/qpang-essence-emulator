@@ -14,9 +14,14 @@ public:
 	DenyIncomingFriendResponseEvent(uint32_t playerId) { _playerId = playerId; };
 
 	ServerPacket Compose(LobbySession* session) override {
-		Packets::Lobby::DenyFriendRequestTargetRsp rsp{};
-		rsp.pendingFriendId = _playerId;
-		return ServerPacket::Create<Opcode::LOBBY_DENY_INCOMING_FRIEND_RSP>(rsp);
+
+		auto packet = ServerPacket::Create<Opcode::LOBBY_DENY_INCOMING_FRIEND_RSP>();
+
+		packet.WriteInt(_playerId);
+		packet.WriteLong(0); // unknown
+		packet.WriteUtf16String(u"Test", 16);
+		
+		return packet;
 	};
 private:
 	uint32_t _playerId;

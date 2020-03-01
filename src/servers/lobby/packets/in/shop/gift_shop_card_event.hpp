@@ -26,20 +26,22 @@ class GiftShopCardEvent : public LobbyPacketEvent {
 	};
 
 public:
-	GiftShopCardEvent() : LobbyPacketEvent(sizeof(Packets::Lobby::GiftShopCard)){};
+	GiftShopCardEvent() : LobbyPacketEvent() {};
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
-		auto packet = pack.Read<Packets::Lobby::GiftShopCard>();
-		std::string targetNickname = StringConverter::WcharToString(packet.nickname, 16);
+		std::u16string nickname = pack.ReadUtf16String(16);
+		uint32_t unk01 = pack.ReadInt();
+		uint32_t sequenceId = pack.ReadInt();
+		pack.Skip(18);
 
-		if(targetNickname == session->Info()->Nickname())
+		std::string targetNickname = StringConverter::Utf16ToUtf8(nickname);
+		ShopItem itemToBuy = session->GetLobby()->Shop()->GetItemBySequenceId(sequenceId);
+
+		if (targetNickname == session->Info()->Nickname())
 			return session->SendError<Opcode::LOBBY_GIFT_ITEM_FAIL>(Error::TARGET_NOT_EXIST);
 
 		if (!session->GetLobby()->ValidateNickname(targetNickname))
 			return session->SendError<Opcode::LOBBY_GIFT_ITEM_FAIL>(Error::TARGET_NOT_EXIST);
-
-		uint32_t sequenceId = packet.goodId;
-		ShopItem itemToBuy = session->GetLobby()->Shop()->GetItemBySequenceId(sequenceId);
 
 		if (itemToBuy.soldCount >= itemToBuy.stock)
 			return session->SendError<Opcode::LOBBY_BUY_ITEM_FAIL>(Error::BUY_ITEM_SOLD_OUT);
@@ -68,7 +70,7 @@ public:
 
 					if (invCard.id == NULL)
 						return;
-						
+
 					session->Send(GiftShopCardResponseEvent{ costsCash, costsCash ? cash : don }.Compose(session));
 					target->Send(ReceiveGiftEvent{ invCard, session->Info()->Nickname() }.Compose(target.get()));
 				}

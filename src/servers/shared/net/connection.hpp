@@ -10,7 +10,8 @@
 //blowfish context
 #include "crypto/blowfish.hpp"
 
-#include "packets/packet.hpp"
+#include "client_packet.hpp"
+#include "server_packet.hpp"
 #include "types.hpp"
 #include "logger.hpp"
 

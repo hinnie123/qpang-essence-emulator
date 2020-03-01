@@ -8,16 +8,18 @@
 class LobbyLoginEvent : public LobbyPacketEvent {
 
 public:
-	LobbyLoginEvent() : LobbyPacketEvent(sizeof(Packets::Lobby::Login)){};
+	LobbyLoginEvent() : LobbyPacketEvent() {};
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
-		
-		auto lobbyLogin = pack.Read<Packets::Lobby::Login>();
-		session->Info()->Uuid(lobbyLogin.uuid);
+		std::array<uint8_t, 16> uuid = pack.ReadArray<uint8_t, 16>();
+		pack.Skip(56);
+
+		session->Info()->Uuid(uuid);
+
 		auto authServer = session->GetLobby()->GetAuth();
 		
 		if(authServer)
-			authServer->SendPacket(LobbyNotifyEvent{ lobbyLogin.uuid }.Compose(session));
+			authServer->SendPacket(LobbyNotifyEvent{ uuid }.Compose(session));
 	};
 };
 

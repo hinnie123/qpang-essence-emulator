@@ -15,11 +15,14 @@
 class OpenCardEvent : public LobbyPacketEvent {
 
 public:
-	OpenCardEvent() : LobbyPacketEvent(sizeof(Packets::Lobby::OpenOnlineCard)) {};
+	OpenCardEvent() : LobbyPacketEvent() {};
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
-		auto packet = pack.Read<Packets::Lobby::OpenOnlineCard>();
-		InventoryCard inventoryCard = session->Inventory()->GetItemByCardId(packet.cardId);
+		uint32_t cardId = pack.ReadInt();
+		uint32_t unk01 = pack.ReadInt();
+		pack.Skip(8);
+
+		InventoryCard inventoryCard = session->Inventory()->GetItemByCardId(cardId);
 
 		if (session->Inventory()->OpenGift(inventoryCard.id))
 			session->Send(OpenCardResponseEvent{ inventoryCard, session->Info()->Don() }.Compose(session));

@@ -13,20 +13,22 @@
 class RegisterCharactersEvent : public LobbyPacketEvent {
 
 public:
-	RegisterCharactersEvent() : LobbyPacketEvent(sizeof(Packets::Lobby::RegisterFinish)) {};
+	RegisterCharactersEvent() : LobbyPacketEvent() {};
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
-		auto packet = pack.Read<Packets::Lobby::RegisterFinish>();
-		std::string nickname = StringConverter::WcharToString(packet.requestName, 16);
+		std::u16string nickname = pack.ReadUtf16String(16);
+		std::u16string referrerNickname = pack.ReadUtf16String(16);
+		uint16_t firstCharacter = pack.ReadShort();
+		uint16_t secondCharacter = pack.ReadShort();
 
-		if (!session->Equipment()->ValidateCharacter(packet.character1) || !session->Equipment()->ValidateCharacter(packet.character2))
+		if (!session->Equipment()->ValidateCharacter(firstCharacter) || !session->Equipment()->ValidateCharacter(secondCharacter))
 			return;
 
-		if (session->GetLobby()->ValidateNickname(nickname))
+		if (session->GetLobby()->ValidateNickname(StringConverter::Utf16ToUtf8(nickname)))
 			return session->SendError<Opcode::LOBBY_SERVER_ERROR>(820);
 
 		Database database{};
-		std::string query = str(boost::format("INSERT INTO players (user_id, name) VALUES (%1%, %2%)") % std::to_string(session->userId) % database.escapeString(nickname));
+		std::string query = str(boost::format("INSERT INTO players (user_id, name) VALUES (%1%, %2%)") % std::to_string(session->userId) % database.escapeString(StringConverter::Utf16ToUtf8(nickname)));
 		database.executeQuery(query);
 
 		uint32_t playerId = database.getLastInsertId();
@@ -42,8 +44,8 @@ public:
 		database.executeQuery(query.substr(0, query.size() - 1)); // getting rid of ','
 		database.Close();
 
-		session->Info()->Nickname(nickname);
-		session->Send(RegisterCharactersResponseEvent{ nickname, packet.character1, packet.character2 }.Compose(session));
+		session->Info()->Nickname(StringConverter::Utf16ToUtf8(nickname));
+		session->Send(RegisterCharactersResponseEvent{ StringConverter::Utf16ToUtf8(nickname), firstCharacter, secondCharacter }.Compose(session));
 	};
 };
 

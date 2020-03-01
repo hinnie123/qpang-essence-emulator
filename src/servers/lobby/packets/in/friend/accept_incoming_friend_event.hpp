@@ -16,13 +16,14 @@ public:
 	AcceptIncomingFriendEvent() : LobbyPacketEvent(sizeof(Packets::Lobby::AcceptFriendRequest)) {};
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
-		auto packet = pack.Read<Packets::Lobby::AcceptFriendRequest>();
+		uint32_t playerId = pack.ReadInt();
+		pack.Skip(46);
 
-		if (!session->Friends()->HasFriend(packet.newFriendId))
+		if (!session->Friends()->HasFriend(playerId))
 			return;
 
-		Friend theNewFriend = session->Friends()->AcceptFriend(packet.newFriendId);
-		auto target = session->GetLobby()->FindSession(packet.newFriendId);
+		Friend theNewFriend = session->Friends()->AcceptFriend(playerId);
+		auto target = session->GetLobby()->FindSession(playerId);
 
 		if (target != nullptr)
 		{

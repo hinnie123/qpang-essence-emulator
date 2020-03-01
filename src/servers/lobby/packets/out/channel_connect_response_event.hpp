@@ -16,10 +16,16 @@ public:
 
 	ServerPacket Compose(LobbySession* session) override
 	{
-		Packets::Lobby::ChannelConnectRsp rsp{};
-		rsp.channelId = _index;
-		rsp.channelServerIp = _channel.ipAddress;
-		return ServerPacket::Create<Opcode::LOBBY_CHANNEL_CONNECT_RSP>(rsp);
+		auto packet = ServerPacket::Create<Opcode::LOBBY_CHANNEL_CONNECT_RSP>();
+
+		packet.WriteInt(_index);
+		packet.WriteLong(0);
+		packet.WriteInt(_channel.ipAddress);
+		packet.WriteInt(0);
+		packet.WriteInt(0);
+		packet.WriteInt(0);
+
+		return packet;
 	};
 private:
 	Channel _channel;

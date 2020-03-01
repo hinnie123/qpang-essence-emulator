@@ -14,26 +14,25 @@ public:
 
 
 	ServerPacket Compose(LobbySession* session) override {
-		Packets::Lobby::GiftsRsp rsp{};
 
-		rsp.countInPacket = _cards.size();
-		rsp.totalCount = _cards.size();
-		rsp.unknown = _cards.size();
+		auto packet = ServerPacket::Create<Opcode::LOBBY_GIFTS_RSP>();
+
+		packet.WriteShort(_cards.size());
+		packet.WriteShort(_cards.size());
+		packet.WriteShort(_cards.size());
 
 		for (size_t i = 0; i < _cards.size(); i++)
 		{
-			Packets::Lobby::GiftsRsp::GiftCard gift;
 			InventoryCard card = _cards.at(i);
 
-			gift.cardId = card.id;
-			gift.dateReceived = card.timeCreated;
-			gift.unk_02 = false; //??
-			gift.unk_02 = card.id;
-
-			rsp.cards[i] = gift;
+			packet.WriteUtf16String(u"Admin", 16);
+			packet.WriteInt(card.id);
+			packet.WriteInt(0);
+			packet.WriteFlag(false);
+			packet.WriteLong(card.timeCreated);
 		}
 
-		return ServerPacket::Create<Opcode::LOBBY_GIFTS_RSP>(rsp);
+		return packet;
 	};
 private:
 	std::vector<InventoryCard> _cards;

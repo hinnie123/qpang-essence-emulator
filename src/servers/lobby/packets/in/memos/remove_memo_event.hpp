@@ -17,10 +17,11 @@ public:
 	RemoveMemoEvent() : LobbyPacketEvent(sizeof(Packets::Lobby::DeleteMemo)) {};
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
-		auto packet = pack.Read<Packets::Lobby::DeleteMemo>();
+		uint64_t memoId = pack.ReadLong();
+		uint32_t unk01 = pack.ReadInt();
 
-		if (session->Messenger()->RemoveMemo(static_cast<uint32_t>(packet.memoId)))
-			session->Send(RemoveMemoResponseEvent{ packet.memoId }.Compose(session));
+		if (session->Messenger()->RemoveMemo(static_cast<uint32_t>(memoId)))
+			session->Send(RemoveMemoResponseEvent{ memoId }.Compose(session));
 	}
 };
 

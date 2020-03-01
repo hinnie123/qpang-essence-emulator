@@ -24,17 +24,18 @@ class CraneEvent : public LobbyPacketEvent {
 	};
 
 public:
-	CraneEvent() : LobbyPacketEvent(sizeof(Packets::Lobby::UseCrane)) {};
+	CraneEvent() : LobbyPacketEvent() {};
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
-		auto packet = pack.Read<Packets::Lobby::UseCrane>();
+		uint16_t times = pack.ReadShort();
+		uint32_t unk01 = pack.ReadInt();
 
-		if (packet.times >= 7) // 7 dc's client?
+		if (times >= 7) // 7 dc's client?
 			return session->SendError<Opcode::LOBBY_USE_CRAIN_FAIL>(Error::CRANE_FAIL_FREQUENCY);
 
 		uint32_t coinsCost = Coin::GOLD;
 
-		switch (packet.times)
+		switch (times)
 		{
 		case 1:
 			coinsCost = 2 * Coin::GOLD;
@@ -53,12 +54,12 @@ public:
 		if (!hasEnoughCoins)
 			return session->SendError<Opcode::LOBBY_USE_CRAIN_FAIL>(Error::CRANE_FAIL_LACK_COIN);
 
-		if (session->Inventory()->List().size() + packet.times > 199) // max inv size
+		if (session->Inventory()->List().size() + times > 199) // max inv size
 			return session->SendError<Opcode::LOBBY_USE_CRAIN_FAIL>(Error::CRANE_FAIL_INVEN_FULL);
 
 		session->Info()->Coins(session->Info()->Coins() - coinsCost);
 		std::vector<InventoryCard> items;
-		for (size_t i = 0; i < packet.times; i++)
+		for (size_t i = 0; i < times; i++)
 		{
 			CraneItem item = session->GetLobby()->Crane()->Use();
 			if (item.id != NULL)

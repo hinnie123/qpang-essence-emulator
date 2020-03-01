@@ -13,30 +13,38 @@ public:
 	GameroomsResponseEvent(std::vector<GameRoom> rooms) { _rooms = rooms; };
 
 	ServerPacket Compose(LobbySession* session) override {
-		Packets::Lobby::GameRoomList rsp{};
 
-		rsp.countInPacket = _rooms.size();
-		rsp.totalCount = _rooms.size();
-		rsp.unknown = _rooms.size();
+		auto packet = ServerPacket::Create<Opcode::LOBBY_GAMEROOMS_RSP>();
+
+		packet.WriteShort(_rooms.size());
+		packet.WriteShort(_rooms.size());
+		packet.WriteShort(_rooms.size());
 
 		for (size_t i = 0; i < _rooms.size(); i++)
 		{
-			auto& gameroom = _rooms.at(i);
+			auto& room = _rooms.at(i);
 
-			rsp.rooms[i].roomId = gameroom.id;
-			wcsncpy(rsp.rooms[i].roomName, std::wstring(gameroom.name.begin(), gameroom.name.end()).data(), 30);
-			rsp.rooms[i].host = inet_addr(sSettings->GetSetting("room_host").c_str());
-			rsp.rooms[i].port = boost::lexical_cast<uint16_t>(sSettings->GetSetting("room_port"));
-			rsp.rooms[i].currplayers = gameroom.currPlayers;
-			rsp.rooms[i].passwordProtected = 8;
-			rsp.rooms[i].maxPlayers = gameroom.maxPlayers;
-			rsp.rooms[i].mapId = gameroom.map;
-			rsp.rooms[i].modeId = gameroom.mode;
-			rsp.rooms[i].state = gameroom.state;
-			rsp.rooms[i].meleeOnly = gameroom.meleeOnly;
+			packet.WriteInt(inet_addr(sSettings->GetSetting("room_host").c_str()));
+			packet.WriteShort(boost::lexical_cast<uint16_t>(sSettings->GetSetting("room_port")));
+			packet.WriteInt(room.id);
+			packet.WriteEmpty(2);
+			packet.WriteUtf16String(StringConverter::Utf8ToUtf16(room.name), 30);
+			packet.WriteEmpty(14);
+			packet.WriteByte(room.map);
+			packet.WriteByte(room.mode);
+			packet.WriteByte(8); // password protected
+			packet.WriteByte(room.state);
+			packet.WriteByte(room.currPlayers);
+			packet.WriteByte(room.maxPlayers);
+			packet.WriteEmpty(5);
+			packet.WriteFlag(false); // level limit
+			packet.WriteFlag(false); // team sorting
+			packet.WriteFlag(false); // skils enabled
+			packet.WriteEmpty(2);
+			packet.WriteFlag(room.meleeOnly); // melee only
 		}
 
-		return ServerPacket::Create<Opcode::LOBBY_GAMEROOMS_RSP>(rsp);
+		return packet;
 	};
 private:
 	std::vector<GameRoom> _rooms;

@@ -13,9 +13,12 @@ public:
 	SetOfflineEvent(uint32_t targetId) { _targetId = targetId; };
 
 	ServerPacket Compose(LobbySession* session) override {
-		Packets::Lobby::ToggleFriendStatus rsp{};
-		rsp.targetId = _targetId;
-		return ServerPacket::Create<Opcode::LOBBY_BUDDY_SET_OFFLINE>(rsp);
+
+		auto packet = ServerPacket::Create<Opcode::LOBBY_BUDDY_SET_OFFLINE>();
+
+		packet.WriteInt(_targetId);
+
+		return packet;
 	};
 private:
 	uint32_t _targetId;

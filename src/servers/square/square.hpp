@@ -5,7 +5,8 @@
 #include <string>
 #include <vector>
 #include <cstdint>
-#include "packet.hpp"
+
+#include "server_packet.hpp"
 
 class SquareSession;
 

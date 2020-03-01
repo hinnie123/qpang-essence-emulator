@@ -26,13 +26,14 @@ public:
 		CARD_TARGET_LEVEL_LOW = CARD_UNGIFTABLE, // have to fix the right error code for this boy..
 	};
 
-	GiftCardEvent() : LobbyPacketEvent(sizeof(Packets::Lobby::GiftCard)) {};
+	GiftCardEvent() : LobbyPacketEvent() {};
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
-		auto packet = pack.Read<Packets::Lobby::GiftCard>();
+		std::u16string nickname = pack.ReadUtf16String(16);
+		uint64_t cardId = pack.ReadLong();
+		uint32_t unk01 = pack.ReadInt();
 
-		std::string targetNickname = StringConverter::WcharToString(packet.nickname, 16);
-		uint64_t cardId = packet.cardId;
+		std::string targetNickname = StringConverter::Utf16ToUtf8(nickname);
 
 		if (targetNickname == session->Info()->Nickname())
 			return session->SendError<Opcode::LOBBY_GIFT_ITEM_FAIL>(Error::TARGET_NOT_EXIST);

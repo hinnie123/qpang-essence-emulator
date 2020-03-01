@@ -12,13 +12,16 @@ public:
 	LoginEvent() : SquarePacketEvent(sizeof(Packets::Square::Login)) {};
 	void Read(SquareSession* session, ClientPacket& pack) override
 	{
-		auto packet = pack.Read<Packets::Square::Login>();
-		sLogger->Get()->debug("Login event: {0:d} is trying to login to squareserver", packet.uid);
+		uint32_t playerId = pack.ReadInt();
+		std::u16string nickname = pack.ReadUtf16String(16);
+		pack.Skip(48);
 
-		session->SetPlayerId(packet.uid);
+		// TODO: Somehow confirm that this session actually belongs to this playerId
+
+		session->SetPlayerId(playerId);
 		auto lobby = session->GetSquareManager()->LobbyServer();
 
-		lobby->SendPacket(RequestEquipmentEvent{ packet.uid }.Compose(session));
+		lobby->SendPacket(RequestEquipmentEvent{ playerId }.Compose(session));
 	}
 };
 
