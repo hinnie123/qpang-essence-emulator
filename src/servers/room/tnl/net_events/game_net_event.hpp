@@ -35,11 +35,6 @@ public:
 	GameNetEvent(GameConnection*,
 		GameNetId gameNetId, NetEvent::GuaranteeType guaranteeType, NetEvent::EventDirection eventDirection);
 
-	std::wstring GetString(ByteBuffer* buffer);
-	void WriteBuffer(BitStream* buffer, std::string data);
-	void WriteBuffer(BitStream* buffer, std::wstring data);
-	std::wstring ReadBuffer(BitStream* stream);
-
 	std::u16string ReadString(BitStream* buffer, uint32_t length = 254);
 	void WriteString(BitStream* buffer, std::u16string string, uint32_t length = 254);
 
