@@ -6,6 +6,8 @@
 CraneManager::CraneManager()
 {
 	Load();
+
+	srand(time(NULL));
 }
 
 CraneManager::~CraneManager()
@@ -15,12 +17,10 @@ CraneManager::~CraneManager()
 void CraneManager::Load()
 {
 	_items.clear();
-	Database database{};
 
-	auto result = database.storeQuery("SELECT *  FROM crane_items");
+	auto result = sDatabase->storeQuery("SELECT *  FROM crane_items");
 	if (result != nullptr)
 	{
-		sLogger->Get()->info("Loading crane items");
 		do
 		{
 			uint32_t id = result->getNumber<uint32_t>("id");
@@ -32,9 +32,6 @@ void CraneManager::Load()
 			result->next();
 		} while (result->hasNext());
 	}
-
-	sLogger->Get()->info("Loaded {0:d} items", _items.size());
-	database.Close();
 }
 
 CraneItem CraneManager::Use()

@@ -27,11 +27,10 @@ public:
 		if (session->GetLobby()->ValidateNickname(StringConverter::Utf16ToUtf8(nickname)))
 			return session->SendError<Opcode::LOBBY_SERVER_ERROR>(820);
 
-		Database database{};
-		std::string query = str(boost::format("INSERT INTO players (user_id, name) VALUES (%1%, %2%)") % std::to_string(session->userId) % database.escapeString(StringConverter::Utf16ToUtf8(nickname)));
-		database.executeQuery(query);
+		std::string query = str(boost::format("INSERT INTO players (user_id, name) VALUES (%1%, %2%)") % std::to_string(session->userId) % sDatabase->escapeString(StringConverter::Utf16ToUtf8(nickname)));
+		sDatabase->executeQuery(query);
 
-		uint32_t playerId = database.getLastInsertId();
+		uint32_t playerId = sDatabase->getLastInsertId();
 		if (playerId == NULL)
 			return session->SendError<Opcode::LOBBY_SERVER_ERROR>(836);
 
@@ -41,8 +40,8 @@ public:
 			query += str(boost::format("(%1%, %2%),")
 				% playerId % session->Equipment()->GetCharacterCode(i));
 		}
-		database.executeQuery(query.substr(0, query.size() - 1)); // getting rid of ','
-		database.Close();
+
+		sDatabase->executeQuery(query.substr(0, query.size() - 1)); // getting rid of ','
 
 		session->Info()->Nickname(StringConverter::Utf16ToUtf8(nickname));
 		session->Send(RegisterCharactersResponseEvent{ StringConverter::Utf16ToUtf8(nickname), firstCharacter, secondCharacter }.Compose(session));

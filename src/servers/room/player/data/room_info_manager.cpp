@@ -22,9 +22,7 @@ void RoomInfoManager::Save()
 
 	Level(sGame->Levels().GetLevel(Experience()).level);
 
-	Database database{};
-	database.executeQuery(str(boost::format("UPDATE players SET experience = %1%, don = %2%, cash = %3%, coins = %4%, level = %5% WHERE id = %6% ") % Experience() % Don() % Cash() % Coins() % Level() % Id()).c_str());
-	database.Close();
+	sDatabase->executeQuery(str(boost::format("UPDATE players SET experience = %1%, don = %2%, cash = %3%, coins = %4%, level = %5% WHERE id = %6% ") % Experience() % Don() % Cash() % Coins() % Level() % Id()).c_str());
 }
 
 uint32_t RoomInfoManager::Id(uint32_t id)

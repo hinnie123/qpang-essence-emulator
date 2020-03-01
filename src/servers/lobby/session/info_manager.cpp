@@ -12,9 +12,7 @@ void InfoManager::Load(uint32_t userId)
 {
 	Uid(userId);
 
-	Database database{};
-	sLogger->Get()->debug("Loading info for player id: {0:d}", userId);
-	auto result = database.storeQuery(str(boost::format("SELECT * FROM players WHERE user_id = %1%") % std::to_string(userId)).c_str());
+	auto result = sDatabase->storeQuery(str(boost::format("SELECT * FROM players WHERE user_id = %1%") % std::to_string(userId)).c_str());
 	if (result != nullptr)
 	{
 		sLogger->Get()->debug("Found info.. setting");
@@ -32,7 +30,6 @@ void InfoManager::Load(uint32_t userId)
 	}
 	else
 		_playerId = userId;
-	database.Close();
 }
 
 std::array<uint8_t, 16> InfoManager::Uuid(std::array<uint8_t, 16> uuid)
@@ -42,10 +39,7 @@ std::array<uint8_t, 16> InfoManager::Uuid(std::array<uint8_t, 16> uuid)
 
 std::string InfoManager::Nickname(std::string nickname)
 {
-	sLogger->Get()->info("Player {0} set his/her nickname to: {1}", _nickname, nickname);
-	Database database{};
-	database.executeQuery(str(boost::format("UPDATE players SET name = %1% WHERE id = %2%") % database.escapeString(nickname) % Id()));
-	database.Close();
+	sDatabase->executeQuery(str(boost::format("UPDATE players SET name = %1% WHERE id = %2%") % sDatabase->escapeString(nickname) % Id()));
 	return _nickname = nickname;
 }
 
@@ -64,7 +58,6 @@ uint32_t InfoManager::Experience(uint32_t experience)
 
 uint8_t InfoManager::Rank(uint8_t rank)
 {
-	sLogger->Get()->info("Player {0} set his/her rank to: {1:d}", _nickname, rank);
 	ExecuteQuery(str(boost::format("UPDATE players SET rank = %1% WHERE id = %2%") % rank % Id()));
 	return _rank = rank;
 }
@@ -77,7 +70,6 @@ uint32_t InfoManager::Prestige(uint32_t prestige)
 
 uint16_t InfoManager::Character(uint16_t character)
 {
-	sLogger->Get()->info("Player {0} changed his/her character to: {1:d}", _nickname, character);
 	ExecuteQuery(str(boost::format("UPDATE players SET default_character = %1% WHERE id = %2%") % character % Id()));
 	return _character = character;
 }
@@ -112,7 +104,5 @@ uint32_t InfoManager::Uid(uint32_t uid)
 
 void InfoManager::ExecuteQuery(std::string query)
 {
-	Database database{};
-	database.executeQuery(query);
-	database.Close();
+	sDatabase->executeQuery(query);
 }

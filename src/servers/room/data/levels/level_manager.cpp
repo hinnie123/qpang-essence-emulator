@@ -11,11 +11,7 @@ LevelManager::~LevelManager()
 
 void LevelManager::Load()
 {
-	sLogger->Get()->info("Loading levels");
-
-	Database database{};
-
-	auto result = database.storeQuery("SELECT * FROM levels");
+	auto result = sDatabase->storeQuery("SELECT * FROM levels");
 
 	if (result != nullptr)
 	{
@@ -32,11 +28,7 @@ void LevelManager::Load()
 
 			result->next();
 		} while (result->hasNext());
-
-		sLogger->Get()->info("Loaded {0:d} levels", _levels.size());
 	}
-
-	database.Close();
 }
 
 Level LevelManager::GetLevel(uint32_t experience)

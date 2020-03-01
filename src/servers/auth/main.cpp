@@ -10,12 +10,7 @@
 int32_t main()
 {
 	sLogger->Init("AuthServer");
-
-	Database database{};
-	{
-		sSettings->Initialize();
-		database.Close();
-	}
+	sSettings->Initialize();
 
 	AuthServer server{};
 	server.Initialize(

@@ -75,10 +75,8 @@ public:
 			OfflinePlayer offlinePlayer = session->GetLobby()->GetOfflinePlayer(targetNickname, OfflinePlayer::Type::MINIMAL);
 			Friend friendToAdd = session->Friends()->ConstructFriend(session->Info()->Id(), offlinePlayer.playerId, offlinePlayer.nickname, offlinePlayer.level);
 
-			Database database{};
-			auto queryResult = database.storeQuery(str(boost::format("SELECT count(*) as count FROM friends WHERE player_to = %1%") % offlinePlayer.playerId));
+			auto queryResult = sDatabase->storeQuery(str(boost::format("SELECT count(*) as count FROM friends WHERE player_to = %1%") % offlinePlayer.playerId));
 			uint32_t count = queryResult->getNumber<uint32_t>("count");
-			database.Close();
 
 			if(count >= MAX_FRIENDS)
 				return session->SendError<Opcode::LOBBY_FRIEND_INVITE_FAIL>(Error::NOMORE_BUDDY_PENDINGS);

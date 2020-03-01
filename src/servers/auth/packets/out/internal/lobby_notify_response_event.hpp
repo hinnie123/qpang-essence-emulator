@@ -4,7 +4,6 @@
 #include <boost/lexical_cast.hpp>
 #include <cstdint>
 #include <array>
-#include "database.hpp"
 #include "packet_event.hpp"
 #include "packet_data.hpp"
 

@@ -5,6 +5,7 @@ Database::Database()
 {
 	//_logger = new Logger("Database");
 	_mysqlClient = mysql_init(NULL);
+	mysql_options(_mysqlClient, MYSQL_OPT_RECONNECT, &reconnectCount);
 
 	Connect();
 }
@@ -162,7 +163,6 @@ std::string Database::validateValue(uint32_t number)
 
 DBResult::DBResult(MYSQL_RES* res)
 {
-
 	handle = res;
 
 	size_t i = 0;
@@ -236,11 +236,10 @@ bool DBInsert::addRow(const std::string& row)
 	// adds new row to buffer
 	const size_t rowLength = row.length();
 	length += rowLength;
-	Database database{};
-	if (length > database.getMaxPacketSize() && !execute()) {
+
+	if (length > sDatabase->getMaxPacketSize() && !execute()) {
 		return false;
 	}
-	database.Close();
 
 	if (values.empty()) {
 		values.reserve(rowLength + 2);
@@ -272,9 +271,7 @@ bool DBInsert::execute()
 	}
 
 	// executes buffer
-	Database database{};
-	bool res = database.executeQuery(query + values);
-	database.Close();
+	bool res = sDatabase->executeQuery(query + values);
 	values.clear();
 	length = query.length();
 	return res;

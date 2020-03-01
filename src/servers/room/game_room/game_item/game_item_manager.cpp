@@ -8,9 +8,7 @@ void GameItemManager::Load(uint8_t map)
 {
 	m_spawnPositions.clear();
 
-	Database database{};
-
-	auto result = database.storeQuery(str(boost::format(
+	auto result = sDatabase->storeQuery(str(boost::format(
 		"SELECT game_item_spawns.id, positions.x, positions.y, positions.z FROM game_item_spawns INNER JOIN positions ON positions.id = game_item_spawns.position_id INNER JOIN maps ON maps.id = game_item_spawns.map_id WHERE maps.map_id = %1%")
 		% std::to_string(map)).c_str());
 
@@ -33,8 +31,6 @@ void GameItemManager::Load(uint8_t map)
 			result->next();
 		} while (result->hasNext());
 	}
-
-	database.Close();
 }
 
 void GameItemManager::UseItem(Player::Ptr player, uint32_t gameItemSpawnIdentifier)

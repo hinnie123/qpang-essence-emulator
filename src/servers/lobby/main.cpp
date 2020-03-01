@@ -11,12 +11,7 @@ int32_t main()
 {
 
 	sLogger->Init("LobbyServer");
-
-	Database database{};
-	{
-		sSettings->Initialize();
-		database.Close();
-	}
+	sSettings->Initialize();
 
 	LobbyServer lobbyServer{};
 	lobbyServer.Initialize(

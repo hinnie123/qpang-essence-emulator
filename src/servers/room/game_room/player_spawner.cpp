@@ -17,9 +17,7 @@ void PlayerSpawner::Load(uint8_t modeIdentifier, uint8_t mapIdentifier)
 
 	std::lock_guard<std::mutex> lg(m_spawnMx);
 
-	Database database{};
-
-	auto result = database.storeQuery(str(boost::format(
+	auto result = sDatabase->storeQuery(str(boost::format(
 		"SELECT * FROM map_spawns INNER JOIN positions ON positions.id = map_spawns.position_id INNER JOIN maps ON maps.id = map_spawns.map_id INNER JOIN game_modes ON game_modes.id = map_spawns.game_mode_id WHERE maps.map_id = %1% AND game_modes.mode_id = %2%")
 		% std::to_string(mapIdentifier) % std::to_string(modeIdentifier)).c_str());
 
@@ -43,8 +41,6 @@ void PlayerSpawner::Load(uint8_t modeIdentifier, uint8_t mapIdentifier)
 			result->next();
 		} while (result->hasNext());
 	}
-
-	database.Close();
 }
 
 void PlayerSpawner::AddSpawn(uint8_t team, Spawn spawn)

@@ -12,12 +12,7 @@
 int32_t main()
 {
 	sLogger->Init("RoomServer");
-
-	Database database{};
-	{
-		sSettings->Initialize();
-		database.Close();
-	}
+	sSettings->Initialize();
 
 	Server server{};
 	server.Initialize(
@@ -27,8 +22,6 @@ int32_t main()
 	server.Accept();
 
 	boost::thread t2{ &Server::Run, &server };
-
-
 
 	sGame->InitializeThreadPool(5);
 	sGame->RunServer();
