@@ -12,18 +12,21 @@
 class ChatResponseEvent : public SquarePacketEvent {
 
 public:
-	ChatResponseEvent(std::string sender, std::string message) { _sender = sender; _message = message; };
+	ChatResponseEvent(std::string sender, std::u16string message) { _sender = sender; _message = message; };
 
 	ServerPacket Compose(SquareSession* session) override {
-		Packets::Square::ParkPlayerChatRsp rsp{};
-		wcsncpy(rsp.sender, std::wstring(_sender.begin(), _sender.end()).data(), 16);
-		wcsncpy(rsp.message, std::wstring(_message.begin(), _message.end()).data(), 254);
-		rsp.length = _message.size();
-		return ServerPacket::Create<Opcode::SQUARE_CHAT_RSP>(rsp);
+
+		auto packet = ServerPacket::Create<Opcode::SQUARE_CHAT_RSP>();
+
+		packet.WriteUtf16String(StringConverter::Utf8ToUtf16(_sender), 16);
+		packet.WriteShort(static_cast<uint16_t>(_message.size()));
+		packet.WriteUtf16String(_message, 254);
+
+		return packet;
 	};
 private:
 	std::string _sender;
-	std::string _message;
+	std::u16string _message;
 };
 
 #endif

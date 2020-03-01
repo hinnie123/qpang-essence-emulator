@@ -5,7 +5,6 @@ ServerPacket::ServerPacket(Opcode opcode, size_t length)
 {
 
 	buffer.resize(length + m_bufferPosition);
-	//header.fullLength = static_cast<uint16_t>(length + 8);
 }
 
 ServerPacket::ServerPacket()
