@@ -11,11 +11,14 @@ public:
 	PackageGoodsResponseEvent() {  };
 
 	ServerPacket Compose(LobbySession* session) override {
-		Packets::Lobby::NormalGoodList rsp{};
-		rsp.countInPacket = 0;
-		rsp.totalCount = 0;
-		rsp.unknown = 0;
-		return ServerPacket::Create<Opcode::LOBBY_REQUEST_PACKAGE_GOODS_RSP>(rsp);
+
+		auto packet = ServerPacket::Create<Opcode::LOBBY_REQUEST_PACKAGE_GOODS_RSP>();
+
+		packet.WriteShort(0);
+		packet.WriteShort(0);
+		packet.WriteShort(0);
+
+		return packet;
 	};
 private:
 };

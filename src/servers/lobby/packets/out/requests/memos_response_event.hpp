@@ -17,29 +17,29 @@ public:
 	MemosResponseEvent(std::vector<Message> messages) { _messages = messages; };
 
 	ServerPacket Compose(LobbySession* session) override {
-		Packets::Lobby::MemosRequestRsp rsp{};
-		rsp.totalCount = _messages.size();
-		rsp.unknown = _messages.size();
-		rsp.countInPacket = _messages.size();
+
+		auto packet = ServerPacket::Create<Opcode::LOBBY_MEMOS_RSP>();
+
+		packet.WriteShort(_messages.size());
+		packet.WriteShort(_messages.size());
+		packet.WriteShort(_messages.size());
 
 		for (int32_t i = 0; i < _messages.size(); i++)
 		{
 			if (i >= MAX_MESSAGES)
 				break;
 
-			int32_t placeHolderI = i;
-			Packets::Lobby::Memo memo = rsp.memos[i];
 			Message message = _messages.at(i);
-			memo.senderId = message.senderId;
-			memo.date = message.received;
-			memo.opened = message.opened;
-			memo.id = message.id;
-			wcsncpy(memo.sender, std::wstring(message.senderName.begin(), message.senderName.end()).data(), 16);
-			wcsncpy(memo.body, std::wstring(message.messageBody.begin(), message.messageBody.end()).data(), 100);
-			rsp.memos[placeHolderI] = memo;
+
+			packet.WriteLong(message.id);
+			packet.WriteInt(message.senderId);
+			packet.WriteInt(message.received);
+			packet.WriteUtf16String(StringConverter::Utf8ToUtf16(message.senderName), 16);
+			packet.WriteUtf16String(StringConverter::Utf8ToUtf16(message.messageBody), 100);
+			packet.WriteFlag(message.opened);
 		}
 
-		return ServerPacket::Create<Opcode::LOBBY_MEMOS_RSP>(rsp);
+		return packet;
 	};
 private:
 	std::vector<Message> _messages;

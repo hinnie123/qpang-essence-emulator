@@ -17,9 +17,8 @@ public:
 	EmoteEvent() : SquarePacketEvent(10) {};
 	void Read(SquareSession* session, ClientPacket& pack) override
 	{
-		auto packet = pack.Read<Packets::Square::ParkPlayerEmote>();
-		sLogger->Get()->debug("Emote event: {0} used emote {1:d}", session->Info()->Nickname(), packet.emoteId);
-		session->GetSquare()->SendPacket(EmoteResponseEvent{ session->Info()->Id(), packet.emoteId }.Compose(session));
+		uint16_t emote = pack.ReadShort();
+		session->GetSquare()->SendPacket(EmoteResponseEvent{ session->Info()->Id(), emote }.Compose(session));
 	}
 };
 

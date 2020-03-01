@@ -12,26 +12,30 @@ class UpdatePlayerEvent : public SquarePacketEvent
 {
 public:
 	UpdatePlayerEvent() : SquarePacketEvent(sizeof(Packets::Square::ParkPlayerUpdate)) {};
-	void Read(SquareSession* session, ClientPacket& pack) override 
+	void Read(SquareSession* session, ClientPacket& pack) override
 	{
-		auto packet = pack.Read<Packets::Square::ParkPlayerUpdate>();
+		pack.Skip(4);
+		uint16_t character = pack.ReadShort();
+		std::array<uint32_t, 9> equipment = pack.ReadArray<uint32_t, 9>();
+		uint32_t unknown1 = pack.ReadInt();
+		uint32_t unknown2 = pack.ReadInt();
+
 		auto square = session->GetSquare();
+		if (square == nullptr) return;
 
-		if (square)
+	
+		// TODO: Move this & validate equipment
+		std::array<uint32_t, 9> currEquipment = session->Info()->Equipment();
+		for (size_t i = 0; i < equipment.size(); i++)
 		{
-			sLogger->Get()->debug("{0} left the inventory, updating player look", session->Info()->Nickname());
-			std::array<uint32_t, 9> equipment = session->Info()->Equipment();
-			for (size_t i = 0; i < equipment.size(); i++)
-			{
-				equipment[i] = packet.equipment[i];
-			}
-
-			session->Info()->SetEquipment(equipment);
-			session->Info()->SetCharacter(packet.characterId);
-			square->SendPacket(UpdatePlayerResponseEvent{ session->Info()->Id(), packet.characterId, session->Info()->Equipment() }.Compose(session));
+			currEquipment[i] = equipment[i];
 		}
-		else
-			sLogger->Get()->warn("{0} left the inventory, but is not in a square", session->Info()->Nickname());
+
+		session->Info()->SetEquipment(equipment);
+		session->Info()->SetCharacter(character);
+
+		square->SendPacket(UpdatePlayerResponseEvent{ session->Info()->Id(), character, session->Info()->Equipment() }.Compose(session));
+
 	};
 };
 

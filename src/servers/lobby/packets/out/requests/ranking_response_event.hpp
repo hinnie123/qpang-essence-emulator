@@ -13,10 +13,13 @@ public:
 
 	ServerPacket Compose(LobbySession* session) override 
 	{
-		Packets::Lobby::PlayerRankingRsp rsp{};
-		rsp.rank = _rank.rank;
-		rsp.amount = _rank.difference;
-		return ServerPacket::Create<Opcode::LOBBY_PLAYER_RANKING_RSP>(rsp);
+		auto packet = ServerPacket::Create < Opcode::LOBBY_PLAYER_RANKING_RSP>();
+
+		packet.WriteInt(0); // unk
+		packet.WriteInt(_rank.rank);
+		packet.WriteInt(_rank.difference);
+
+		return packet;
 	};
 private:
 	Leaderboard::Position _rank;

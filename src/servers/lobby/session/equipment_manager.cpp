@@ -12,7 +12,6 @@ EquipmentManager::~EquipmentManager()
 void EquipmentManager::Load(uint32_t playerId)
 {
 	Database database{};
-	sLogger->Get()->debug("Loading player equipment for player: {0:d}", playerId);
 	auto result = database.storeQuery(str(boost::format("SELECT * FROM player_equipment WHERE player_id = %1%") % playerId));
 	if (result != nullptr)
 	{
@@ -53,8 +52,6 @@ void EquipmentManager::Save(uint32_t playerId)
 	Database database{};
 	std::string query;
 
-	sLogger->Get()->debug("Saving equipment for player: {0:d}", playerId);
-
 	for (size_t i = 0; i < _equipment.size(); i++)
 	{
 		query = std::string();
@@ -81,7 +78,6 @@ void EquipmentManager::Save(uint32_t playerId)
 
 void EquipmentManager::SetEquipmentPart(Character character, EquipmentSlot slot, uint64_t cardId)
 {
-	sLogger->Get()->debug("Set equipment part (card: {2:d}) for character: {0:d} in slot: {1:d}", character, slot, cardId);
 	_equipment[character][slot] = cardId;
 }
 

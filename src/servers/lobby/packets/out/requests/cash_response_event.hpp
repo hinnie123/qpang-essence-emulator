@@ -11,9 +11,12 @@ public:
 	CashResponseEvent(uint32_t cash) { _cash = cash;};
 
 	ServerPacket Compose(LobbySession* session) override {
-		Packets::Lobby::CashRequestRsp rsp{};
-		rsp.amount = _cash;
-		return ServerPacket::Create<Opcode::LOBBY_REQUEST_CASH_RSP>(rsp);
+
+		auto packet = ServerPacket::Create<Opcode::LOBBY_REQUEST_CASH_RSP>();
+
+		packet.WriteInt(_cash);
+
+		return packet;
 	};
 private:
 	uint32_t _cash;

@@ -860,8 +860,8 @@ namespace Packets
 		struct Login : ClientPacketData
 		{
 			uint32_t uid;
-			wchar_t nickname[19];
-			char unk[44];
+			wchar_t nickname[17];
+			char unk[48];
 		};
 #pragma pack(push, 1)
 		struct LoginRsp : ServerPacketData

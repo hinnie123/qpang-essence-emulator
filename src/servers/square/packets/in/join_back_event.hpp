@@ -15,13 +15,11 @@ class JoinBackEvent : public SquarePacketEvent
 		std::array<float, 3> position = session->Info()->Position();
 		session->Info()->SetState(ChangePlayerStateEvent::IDLE);
 
-		sLogger->Get()->debug("Joinback event: {0} went back to the square", session->Info()->Nickname());
-
 		auto square = session->GetSquare();
-		if (square)
-			square->SendPacket(ChangePlayerStateEvent{ session->Info()->Id(), ChangePlayerStateEvent::IDLE }.Compose(nullptr));
-		else
-			sLogger->Get()->warn("Joinbacke event: {0} wants to join back a square, but isn't in one", session->Info()->Nickname());
+
+		if (square == nullptr) return;
+
+		square->SendPacket(ChangePlayerStateEvent{ session->Info()->Id(), ChangePlayerStateEvent::IDLE }.Compose(nullptr));
 
 		session->Send(JoinBackResponseEvent{ position }.Compose(session));
 	};

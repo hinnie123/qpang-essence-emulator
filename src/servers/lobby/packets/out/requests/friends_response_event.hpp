@@ -17,24 +17,25 @@ public:
 
 	ServerPacket Compose(LobbySession* session) override
 	{
-		Packets::Lobby::BuddiesRequestRsp rsp{};
-		rsp.totalSent = _totalSent;
-		rsp.totalCount = _totalCount;
-		rsp.countInPacket = _friends.size();
+		auto packet = ServerPacket::Create<Opcode::LOBBY_BUDDIES_RSP>();
+
+		packet.WriteShort(_totalSent);
+		packet.WriteShort(_totalCount);
+		packet.WriteShort(_friends.size());
 
 		for (size_t i = 0; i < _friends.size(); i++)
 		{
-			Packets::Lobby::BuddiesRequestRsp::Buddy buddy;
-			Friend theFriend = _friends.at(i);
-			buddy.isOnline = session->GetLobby()->IsOnline(theFriend.id);
-			buddy.friendState = theFriend.state;
-			buddy.id = theFriend.toPlayerId;
-			buddy.level = theFriend.level;
-			wcsncpy(buddy.name, std::wstring(theFriend.nickname.begin(), theFriend.nickname.end()).data(), 16);
-			rsp.buddies[i] = buddy;
+			Friend f = _friends.at(i);
+
+			packet.WriteInt(f.id);
+			packet.WriteEmpty(4);
+			packet.WriteByte(f.state);
+			packet.WriteFlag(false); // is online
+			packet.WriteShort(f.level);
+			packet.WriteUtf16String(StringConverter::Utf8ToUtf16(f.nickname), 16);
 		}
 
-		return ServerPacket::Create<Opcode::LOBBY_BUDDIES_RSP>(rsp);
+		return packet;
 	}
 
 private:

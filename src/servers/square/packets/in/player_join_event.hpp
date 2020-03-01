@@ -16,20 +16,13 @@ class PlayerJoinEvent : public SquarePacketEvent {
 public:
 	void Read(SquareSession* session, ClientPacket& pack) override
 	{
-
 		auto square = session->GetSquare();
+		if (square == nullptr) return;
 
-		if (square != nullptr)
-		{
-			std::vector<std::shared_ptr<SquareSession>> players = square->List();
+		std::vector<std::shared_ptr<SquareSession>> players = square->List();
+		session->Send(PlayerJoinResponseEvent{ players }.Compose(session));
+		square->SendPacket(AddPlayerEvent{}.Compose(session));
 
-			sLogger->Get()->debug("Player join event: {0} is spawning in square {1:d}", session->Info()->Nickname(), square->Id());
-
-			session->Send(PlayerJoinResponseEvent{ players }.Compose(session));
-			square->SendPacket(AddPlayerEvent{}.Compose(session));
-		}
-		else
-			sLogger->Get()->warn(("Player join event: {0} tried spawning in square, but isn't in one", session->Info()->Nickname()));
 	}
 };
 

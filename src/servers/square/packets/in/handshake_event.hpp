@@ -10,7 +10,6 @@ public:
 	HandshakeEvent() : SquarePacketEvent(sizeof(Packets::Handshake::KeyExchange)) {};
 	void Read(SquareSession* session, ClientPacket& pack) override
 	{
-		auto keyExchange = pack.Read<Packets::Handshake::KeyExchange>(NULL);
 		session->Send(HandshakeResponseEvent{}.Compose(session), BlowfishContext::CryptoType::PUBLIC);
 	}
 };

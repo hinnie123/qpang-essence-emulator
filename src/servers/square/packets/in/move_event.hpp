@@ -9,18 +9,18 @@ class MoveEvent : public SquarePacketEvent
 {
 public:
 	MoveEvent() : SquarePacketEvent(22) {};
-	void Read(SquareSession* session, ClientPacket& pack) override 
+	void Read(SquareSession* session, ClientPacket& pack) override
 	{
-		auto packet = pack.Read<Packets::Square::ParkPlayerMove>();
-
-		sLogger->Get()->trace("{0} moved to location: {1:f}, {2:f}, {3:f}", session->Info()->Nickname(), packet.position[0], packet.position[1], packet.position[2]);
+		uint8_t type = pack.ReadByte();
+		uint8_t direction = pack.ReadByte();
+		std::array<float, 3> position = pack.ReadArray<float, 3>();
+		uint16_t unknown1 = pack.ReadShort();
 
 		auto square = session->GetSquare();
-		if (square)
-		{
-			session->Info()->SetPosition(packet.position);
-			square->SendPacket(MoveResponseEvent{ session->Info()->Id(), packet.position, packet.type, packet.direction }.Compose(session));
-		}
+		if (square == nullptr) return;
+
+		session->Info()->SetPosition(position);
+		square->SendPacket(MoveResponseEvent{ session->Info()->Id(), position, type, direction }.Compose(session));
 	};
 };
 
