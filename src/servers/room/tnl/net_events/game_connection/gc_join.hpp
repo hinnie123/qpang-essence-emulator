@@ -1,6 +1,7 @@
 #ifndef GC_JOIN_HPP
 #define GC_JOIN_HPP
 
+#include "string_converter.hpp"
 #include "game_net_event.hpp"
 #include "player.hpp"
 
@@ -46,7 +47,7 @@ public:
 		for (U32 item : weaponIds)
 			bstream->write(item);
 
-		WriteBuffer(bstream, nickname);
+		WriteString(bstream, StringConverter::Utf8ToUtf16(nickname), 16);
 		bstream->write(unk_10); //270
 		bstream->write(unk_11); //271
 		bstream->write(level); //252

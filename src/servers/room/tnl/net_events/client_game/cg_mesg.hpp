@@ -16,8 +16,9 @@ public:
 	{
 		bstream->read(&playerId);
 		bstream->read(&cmd);
-		nickname = ReadBuffer(bstream);
-		message = ReadBuffer(bstream);
+		
+		nickname = ReadString(bstream, 16);
+		message = ReadString(bstream, 254);
 	};
 
 	void handle(Player::Ptr player)
@@ -45,8 +46,8 @@ public:
 
 	U32 playerId;
 	U32 cmd;
-	std::wstring nickname;
-	std::wstring message;
+	std::u16string nickname;
+	std::u16string message;
 
 	TNL_DECLARE_CLASS(CGMesg);
 };

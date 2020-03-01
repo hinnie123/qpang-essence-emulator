@@ -10,7 +10,7 @@ class GCMesg : public GameNetEvent
 	typedef NetEvent Parent;
 public:
 	GCMesg() : GameNetEvent{ GC_MESG, NetEvent::GuaranteeType::Unguaranteed, NetEvent::DirAny } {};
-	GCMesg(const U32& playerId, const U32& cmd, const std::wstring& nickname, const std::wstring& message) : GameNetEvent{ GC_MESG, NetEvent::GuaranteeType::Unguaranteed, NetEvent::DirAny } 
+	GCMesg(const U32& playerId, const U32& cmd, std::u16string nickname, std::u16string message) : GameNetEvent{ GC_MESG, NetEvent::GuaranteeType::Unguaranteed, NetEvent::DirAny } 
 	{	
 		this->playerId = playerId;
 		this->cmd = cmd; // 8 = message without sender?
@@ -21,8 +21,8 @@ public:
 	{
 		bstream->write(playerId);
 		bstream->write(cmd);
-		WriteBuffer(bstream, nickname);
-		WriteBuffer(bstream, message);
+		WriteString(bstream, nickname, 16);
+		WriteString(bstream, message, message.size() % 254);
 	};
 	void unpack(EventConnection* conn, BitStream* bstream) {};
 	void process(EventConnection* ps) {};
@@ -30,8 +30,8 @@ public:
 	U32 playerId;
 	U32 cmd;
 
-	std::wstring nickname;
-	std::wstring message;
+	std::u16string nickname;
+	std::u16string message;
 
 	TNL_DECLARE_CLASS(GCMesg);
 };

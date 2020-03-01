@@ -96,11 +96,6 @@ void GameConnection::SetPlayerTeam(Player::Ptr player, Team team)
 	Send(new GCPlayerChange(player, CGPlayerChange::TEAM, team));
 }
 
-void GameConnection::SendPlayerMessage(uint32_t playerIdentifier, std::wstring nickname, std::wstring message)
-{
-	Send(new GCMesg(playerIdentifier, 1, nickname, message));
-}
-
 void GameConnection::EnterGame(Player::Ptr player)
 {
 	if (player->GetRoom() == nullptr)

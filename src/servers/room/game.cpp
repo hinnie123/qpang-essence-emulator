@@ -226,7 +226,7 @@ SkillManager Game::Skills()
 	return _skillManager;
 }
 
-GameRoom::Ptr Game::CreateRoom(const std::wstring & name, const uint8_t & map, const uint8_t & mode)
+GameRoom::Ptr Game::CreateRoom(const std::u16string & name, const uint8_t & map, const uint8_t & mode)
 {
 	std::lock_guard<std::mutex> lg(_roomMx);
 
@@ -242,11 +242,10 @@ GameRoom::Ptr Game::CreateRoom(const std::wstring & name, const uint8_t & map, c
 		}
 	}
 
-
 	auto gameMode = _gameModeManager.GetMode(mode);
 
 	//"room" placeholder because crash
-	auto room = std::make_shared<GameRoom>(maxId, "room", gameMode, map);
+	auto room = std::make_shared<GameRoom>(maxId, name, gameMode, map);
 	_gameRooms.push_back(room);
 
 	return room;

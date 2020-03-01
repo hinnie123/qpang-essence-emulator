@@ -4,6 +4,7 @@
 #include "game_net_event.hpp"
 #include <vector>
 #include "player.hpp"
+#include "team.hpp"
 #include <numeric>
 
 class GCScoreResult : public GameNetEvent
@@ -18,12 +19,29 @@ public:
 
 		for (auto player : players)
 		{
-			//scorePlayers.push_back(ScorePlayer{ player->Info()->Id(), 0, 1, player->Info()->Team(),
-			//	0, player->Info()->GainedKills(), player->Info()->GainedDeaths(), 0,
-			//player->Info()->GainedDon(), player->Info()->GainedExperience(), 0, 0, 0, 0, 0, 3, 0, 0,
-			//GetBuffer(player->Info()->Nickname()), 0 });
-			//
-			//player->Info()->Team() == RoomInfoManager::BLUE ? totalValueBlue += player->Info()->Kills() : totalValueYellow += player->Info()->Kills();
+			scorePlayers.push_back(ScorePlayer{
+				player->GetIdentifier(),
+				0,
+				1,
+				player->GetTeam(),
+				0,
+				static_cast<U16>(player->GetSession()->GetKills()),
+				static_cast<U16>(player->GetSession()->GetDeaths()),
+				0,
+				player->GetSession()->GetDon(),
+				player->GetSession()->GetExperience(),
+				0,
+				0,
+				0,
+				0,
+				0,
+				3,
+				0,
+				0,
+				player->GetName(), 0
+				});
+
+			player->GetTeam() == Team::BLUE ? totalValueBlue += player->GetSession()->GetKills() : totalValueYellow += player->GetSession()->GetKills();
 		}
 	};
 
@@ -64,7 +82,7 @@ public:
 			bstream->write(player.unk_16);
 			bstream->write(player.donMultiplier);
 			bstream->write(sGame->ExpRate());
-			bstream->write(player.buffer);
+			WriteString(bstream, StringConverter::Utf8ToUtf16(player.nickname), 16);
 			bstream->write(player.unk_19);
 		}
 	};
@@ -90,7 +108,7 @@ public:
 		U8 unk_16 = 3; // which boosts are active? 1 = xp booster, 2 = don boost so 3 = xp & cash boosts?
 		U16 donMultiplier = 50; // in %
 		U16 expMultiplier = 100; // in %
-		ByteBuffer* buffer;
+		std::string nickname;
 		U32 unk_19 = 0;
 	};
 

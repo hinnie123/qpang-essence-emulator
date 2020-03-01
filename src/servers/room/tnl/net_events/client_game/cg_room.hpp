@@ -27,7 +27,7 @@ public:
 		char buf[256];
 		bstream->readString(buf);
 		password = buf;
-		title = ReadBuffer(bstream);
+		title = ReadString(bstream, 30);
 		bstream->read(&timeAmount);
 		bstream->read(&isRounds);
 		bstream->read(&unk_11);
@@ -186,7 +186,7 @@ public:
 
 	U8 goal; //111
 	std::string password; //104
-	std::wstring title; //112
+	std::u16string title; //112
 
 	union
 	{

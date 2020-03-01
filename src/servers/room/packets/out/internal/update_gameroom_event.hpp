@@ -25,17 +25,18 @@ public:
 
 	ServerPacket Compose(Connection::Ptr conn)
 	{
-		Packets::Internal::UpdateGameRoom rsp{};
-		rsp.id = m_identifier;
-		rsp.map = m_map;
-		wcscpy(rsp.name, L"room");
-		rsp.meleeOnly = m_melee;
-		rsp.currPlayers = m_currentPlayers;
-		rsp.maxPlayers = m_maxPlayers;
-		rsp.mode = m_modeIdentifier;
-		rsp.state = m_state;
-		
-		return ServerPacket::Create<Opcode::UPDATE_GAMEROOM>(rsp);
+		auto packet = ServerPacket::Create<Opcode::UPDATE_GAMEROOM>();
+
+		packet.WriteInt(m_identifier);
+		packet.WriteByte(m_map);
+		packet.WriteByte(m_modeIdentifier);
+		packet.WriteByte(m_currentPlayers);
+		packet.WriteByte(m_maxPlayers);
+		packet.WriteByte(m_melee);
+		packet.WriteByte(m_state);
+		packet.WriteUtf16String(m_name, 30);
+	
+		return packet;
 	}
 private:
 	uint32_t m_identifier;
@@ -45,7 +46,7 @@ private:
 	uint8_t m_maxPlayers;
 	uint8_t m_modeIdentifier;
 	uint8_t m_state;
-	std::string m_name;
+	std::u16string m_name;
 };
 
 #endif // !NEW_GAMEROOM_EVENT_HPP

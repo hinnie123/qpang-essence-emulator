@@ -4,7 +4,7 @@
 #include "game.hpp"
 #include "game_connection.hpp"
 
-GameRoom::GameRoom(uint32_t identifier, std::string name, GameMode* mode, uint8_t map)
+GameRoom::GameRoom(uint32_t identifier, std::u16string name, GameMode* mode, uint8_t map)
 	: m_state(WAITING), m_mode(mode), m_identifier(identifier), m_name(std::move(name)), m_map(map)
 {
 }
@@ -331,7 +331,7 @@ RoomState GameRoom::GetState() const
 	return m_state;
 }
 
-std::string GameRoom::GetName() const
+std::u16string GameRoom::GetName() const
 {
 	return m_name;
 }

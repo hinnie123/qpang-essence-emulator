@@ -3,6 +3,8 @@
 
 #include <string>
 #include <cstdint>
+
+#include "string_converter.hpp"
 #include "game_net_event.hpp"
 #include "game_room.hpp"
 #include "game_mode.hpp"
@@ -33,7 +35,7 @@ public:
 		this->cmd = cmd;
 		this->value = value;
 		this->mode = mode;
-		this->title = "-";
+		this->title = u"-";
 	};
 
 	void pack(EventConnection* conn, BitStream* bstream)
@@ -47,7 +49,7 @@ public:
 		bstream->write(goal);
 
 		bstream->writeString(password.c_str(), 255);
-		WriteBuffer(bstream, title);
+		WriteString(bstream, title);
 		bstream->write(time);
 		bstream->write(rounds);
 		bstream->write(_160);
@@ -77,7 +79,7 @@ public:
 	U8 goal = 5; //111
 
 	std::string password;
-	std::string title;
+	std::u16string title;
 	U8 time = 6; //154
 
 	union

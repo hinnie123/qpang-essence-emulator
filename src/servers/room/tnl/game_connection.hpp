@@ -37,7 +37,6 @@ public:
 	void KickPlayer(uint32_t playerIdentifier, uint32_t masterIdentifier, uint32_t cmd);
 
 	void SetPlayerTeam(Player::Ptr player, Team team);
-	void SendPlayerMessage(uint32_t playerIdentifier, std::wstring nickname, std::wstring message);
 
 	void EnterGame(Player::Ptr player);
 

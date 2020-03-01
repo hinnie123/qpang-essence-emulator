@@ -1,6 +1,7 @@
 #ifndef GC_ROOM_INFO_HPP
 #define GC_ROOM_INFO_HPP
 
+#include "string_converter.hpp"
 #include "game_net_event.hpp"
 #include "game_room.hpp"
 #include "game_mode.hpp"
@@ -43,7 +44,7 @@ public:
 		bstream->write(roomState); //148
 		bstream->write(respawnTime); //152
 		bstream->write(p2pWaitTime); //154 
-		WriteBuffer(bstream, title);
+		WriteString(bstream, title);
 		bstream->write(isTime); //156
 		bstream->write(rounds); //157
 		bstream->write(levelLimit); //164
@@ -67,7 +68,7 @@ public:
 	U16 respawnTime; //152
 	U16 p2pWaitTime; //154 
 
-	std::string title; //172
+	std::u16string title; //172
 
 	U8 isTime; //156
 	U8 rounds; //157

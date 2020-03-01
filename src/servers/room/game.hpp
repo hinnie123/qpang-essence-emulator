@@ -55,7 +55,7 @@ public:
 	LevelManager Levels();
 	SkillManager Skills();
 
-	GameRoom::Ptr CreateRoom(const std::wstring& name, const uint8_t& map, const uint8_t& mode);
+	GameRoom::Ptr CreateRoom(const std::u16string& name, const uint8_t& map, const uint8_t& mode);
 	GameRoom::Ptr GetRoom(const uint32_t& id);
 
 	GameMode* FindGameMode(const uint8_t& mode);

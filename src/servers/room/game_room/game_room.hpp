@@ -31,7 +31,7 @@ public:
 	 * \param name name of the gameroom
 	 * \param mode mode of the gameroom
 	 */
-	GameRoom(uint32_t identifier, std::string name, GameMode* mode, uint8_t map);
+	GameRoom(uint32_t identifier, std::u16string name, GameMode* mode, uint8_t map);
 
 	/**
 	 * \brief destructs this gameroom object 
@@ -216,7 +216,7 @@ public:
 	 * \brief returns the name of the room
 	 * \return std::string
 	 */
-	std::string GetName() const;
+	std::u16string GetName() const;
 
 	/**
 	 * \brief returns the identifier of the room
@@ -395,7 +395,7 @@ private:
 	/**
 	 * \brief the name of this gameroom object
 	 */
-	const std::string m_name;
+	const std::u16string m_name;
 };
 
 #endif //_GAME_ROOM_HPP

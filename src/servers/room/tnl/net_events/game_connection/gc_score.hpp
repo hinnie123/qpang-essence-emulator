@@ -69,7 +69,7 @@ public:
 			bstream->write(U16(player.deaths));
 			bstream->write(U16(player.score));
 			bstream->write(U8(player.team));
-			WriteBuffer(bstream, player.name);
+			WriteString(bstream, StringConverter::Utf8ToUtf16(player.name), 16);
 			bstream->write((U32)0);
 		}
 	};
