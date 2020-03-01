@@ -14,10 +14,10 @@
 class EmoteEvent : public SquarePacketEvent {
 
 public:
-	EmoteEvent() : SquarePacketEvent(10) {};
+	EmoteEvent() : SquarePacketEvent() {};
 	void Read(SquareSession* session, ClientPacket& pack) override
 	{
-		uint16_t emote = pack.ReadShort();
+		uint32_t emote = pack.ReadInt();
 		session->GetSquare()->SendPacket(EmoteResponseEvent{ session->Info()->Id(), emote }.Compose(session));
 	}
 };

@@ -20,8 +20,6 @@ public:
 		packet.WriteShort(_rooms.size());
 		packet.WriteShort(_rooms.size());
 
-		Packets::Lobby::GameRoomList rsp{};
-
 		for (size_t i = 0; i < _rooms.size(); i++)
 		{
 			auto& room = _rooms.at(i);
@@ -34,7 +32,7 @@ public:
 			packet.WriteEmpty(14);
 			packet.WriteByte(room.map);
 			packet.WriteByte(room.mode);
-			packet.WriteFlag(false); // password protected
+			packet.WriteByte(8); // password protected
 			packet.WriteByte(room.state);
 			packet.WriteByte(room.currPlayers);
 			packet.WriteByte(room.maxPlayers);
@@ -42,8 +40,8 @@ public:
 			packet.WriteFlag(false); // level limit
 			packet.WriteFlag(false); // team sorting
 			packet.WriteFlag(false); // skils enabled
-			packet.WriteEmpty(5);
-			packet.WriteFlag(false); // melee only
+			packet.WriteEmpty(2);
+			packet.WriteFlag(room.meleeOnly); // melee only
 		}
 
 		return packet;

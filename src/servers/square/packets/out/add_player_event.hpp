@@ -13,17 +13,20 @@ class AddPlayerEvent : public SquarePacketEvent {
 public:
 	ServerPacket Compose(SquareSession* session) override
 	{
-		Packets::Square::ParkAddPlayer rsp{};
-		rsp.id = session->Info()->Id();
-		rsp.level = session->Info()->Level();
-		rsp.rank = session->Info()->Rank();
-		rsp.characterId = session->Info()->Character();
-		std::array<uint32_t, 9> allEquipment = session->Info()->Equipment();
-		rsp.state = 0;
-		rsp.equipment = allEquipment;
-		rsp.position = session->Info()->Position();
-		wcsncpy(rsp.name, StringConverter::StringToWString(session->Info()->Nickname()).data(), 16);
-		return ServerPacket::Create<Opcode::SQUARE_ADD_PLAYER>(rsp);
+		auto packet = ServerPacket::Create<Opcode::SQUARE_ADD_PLAYER>();
+
+		packet.WriteInt(0); // ?
+		packet.WriteInt(session->Info()->Id());
+		packet.WriteUtf16String(StringConverter::Utf8ToUtf16(session->Info()->Nickname()), 16);
+		packet.WriteByte(session->Info()->Level());
+		packet.WriteByte(session->Info()->Rank());
+		packet.WriteEmpty(2);
+		packet.WriteShort(session->Info()->Character());
+		packet.WriteArray<uint32_t, 9>(session->Info()->Equipment());
+		packet.WriteEmpty(4);
+		packet.WriteArray<float, 3>(session->Info()->Position());
+
+		return packet;
 	}
 private:
 };

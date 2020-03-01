@@ -13,9 +13,12 @@ public:
 	JoinBackResponseEvent(std::array<float, 3> position) { _position = position; };
 
 	ServerPacket Compose(SquareSession* session) override {
-		Packets::Square::ParkPlayerJoinBackRsp rsp{};
-		rsp.position = _position;
-		return ServerPacket::Create<Opcode::SQUARE_JOIN_BACK_RSP>(rsp);
+
+		auto packet = ServerPacket::Create<Opcode::SQUARE_JOIN_BACK_RSP>();
+
+		packet.WriteArray<float, 3>(_position);
+
+		return packet;
 	};
 private: 
 	std::array<float, 3> _position;

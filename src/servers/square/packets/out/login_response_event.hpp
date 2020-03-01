@@ -16,29 +16,29 @@ public:
 	LoginResponseEvent(std::vector<Square::Ptr> squares) { _squares = squares; };
 
 	ServerPacket Compose(SquareSession* session) override {
-		Packets::Square::LoginRsp rsp{};
-		
+
+		auto packet = ServerPacket::Create<Opcode::SQUARE_LOGIN_RSP>();
+
 		uint32_t size = _squares.size();
-		rsp.totalCount = size;
-		rsp.countInPacket = size;
-		rsp.unknown = size;
+
+		packet.WriteShort(size);
+		packet.WriteShort(size);
+		packet.WriteShort(size);
 
 		for (size_t i = 0; i < size; i++)
 		{
-			Packets::Square::LoginRsp::Park park = rsp.park[i];
 			Square::Ptr square = _squares.at(i);
 
-			park.id = square->Id();
-			park.state = square->State();
-			park.currPlayers = square->List().size();
-			park.maxPlayers = square->MaxCapacity();
-			wcscpy(park.name, StringConverter::StringToWChar(square->Name()));
-			//wcsncpy(park.name, std::wstring(square->Name().begin(), square->Name().end()).data());
-
-			rsp.park[i] = park;
+			packet.WriteEmpty(5);
+			packet.WriteInt(square->Id());
+			packet.WriteByte(square->MaxCapacity());
+			packet.WriteByte(square->List().size());
+			packet.WriteByte(square->State());
+			packet.WriteUtf16String(StringConverter::Utf8ToUtf16(square->Name()), 16);
+			packet.WriteEmpty(33);
 		}
 
-		return ServerPacket::Create<Opcode::SQUARE_LOGIN_RSP>(rsp);
+		return packet;
 	};
 private:
 	std::vector<Square::Ptr> _squares;

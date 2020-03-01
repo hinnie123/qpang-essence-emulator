@@ -17,36 +17,28 @@ public:
 
 	ServerPacket Compose(SquareSession* session) override
 	{
-		Packets::Square::ParkLoadPlayers rsp{};
+		auto packet = ServerPacket::Create<Opcode::SQUARE_LOAD_PLAYERS>();
 		uint32_t size = _sessions.size();
-		rsp.countInPacket = size;
-		rsp.totalCount = size;
-		rsp.unknown = size;
 
-		for (size_t i = 0; i < size; i++)
+		packet.WriteShort(size);
+		packet.WriteShort(size);
+		packet.WriteShort(size); // minus ourself ? 
+
+		for (SquareSession::Ptr target : _sessions)
 		{
-			Packets::Square::ParkLoadPlayers::SquarePlayer player = rsp.squarePlayer[i];
-			SquareSession::Ptr otherSession = _sessions.at(i);
-
-			if (session->Info()->Id() != otherSession->Info()->Id())
-			{
-				player.id = otherSession->Info()->Id();
-				player.level = otherSession->Info()->Level();
-				player.character = otherSession->Info()->Character();
-				player.rank = otherSession->Info()->Rank();
-				wcsncpy(player.nickname, StringConverter::StringToWString(otherSession->Info()->Nickname()).data(), 16);
-				player.state = otherSession->Info()->State();
-				player.refers = otherSession->Info()->Prestige();
-				for (size_t i = 0; i < 3; i++)
-				{
-					player.position[i] = otherSession->Info()->Position()[i];
-				}
-				player.equipment = otherSession->Info()->Equipment();
-				rsp.squarePlayer[i] = player;
-			}
+			packet.WriteInt(target->Info()->State());
+			packet.WriteInt(target->Info()->Id());
+			packet.WriteUtf16String(StringConverter::Utf8ToUtf16(target->Info()->Nickname()), 16);
+			packet.WriteByte(target->Info()->Level());
+			packet.WriteByte(target->Info()->Rank());
+			packet.WriteShort(target->Info()->Prestige());
+			packet.WriteShort(target->Info()->Character());
+			packet.WriteArray<uint32_t, 9>(target->Info()->Equipment());
+			packet.WriteEmpty(6);
+			packet.WriteArray<float, 3>(target->Info()->Position());
 		}
 
-		return ServerPacket::Create<Opcode::SQUARE_LOAD_PLAYERS>(rsp);
+		return packet;
 	}
 private:
 	std::vector<std::shared_ptr<SquareSession>> _sessions;

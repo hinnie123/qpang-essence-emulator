@@ -15,11 +15,13 @@ public:
 
 	ServerPacket Compose(SquareSession* session) override
 	{
-		Packets::Square::ParkUpdatePlayer rsp{};
-		rsp.targetId = _playerId;
-		rsp.characterId = _characterId;
-		rsp.equipment = _equipment;
-		return ServerPacket::Create<Opcode::SQUARE_UPDATE_PLAYER>(rsp);
+		auto packet = ServerPacket::Create<Opcode::SQUARE_UPDATE_PLAYER>();
+
+		packet.WriteInt(_playerId);
+		packet.WriteShort(_characterId);
+		packet.WriteArray<uint32_t, 9>(_equipment);
+
+		return packet;
 	};
 private:
 	uint32_t _playerId;
