@@ -21,10 +21,9 @@ public:
 
 	void Initialize()
 	{
-		Database database{};
-		auto result = database.storeQuery("SELECT * FROM settings");
+		auto result = sDatabase->storeQuery("SELECT * FROM settings");
 
-		if (result)
+		if (result != nullptr)
 		{
 			sLogger->Get()->info("Loading server settings");
 			do
@@ -44,7 +43,6 @@ public:
 				sLogger->Get()->debug("Key: {0} Value: {1}", pair.first, pair.second);
 			}
 		}
-		database.Close();
 	}
 
 	std::string GetSetting(std::string key)

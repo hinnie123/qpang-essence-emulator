@@ -10,7 +10,6 @@ public:
 	void Read(GameLobbySession* session, ClientPacket& pack) override
 	{
 		session->GetConnection()->SetEncryption(false);
-		sLogger->Get()->info("Disabled encryption for lobbyserver");
 	}
 private:
 };

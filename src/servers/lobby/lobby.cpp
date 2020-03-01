@@ -38,9 +38,7 @@ OfflinePlayer Lobby::GetOfflinePlayer(uint32_t playerId, OfflinePlayer::Type typ
 
 OfflinePlayer Lobby::GetOfflinePlayer(std::string nickname, OfflinePlayer::Type type)
 {
-	Database database{};
-	nickname = database.escapeString(nickname);
-	database.Close();
+	nickname = sDatabase->escapeString(nickname);
 	std::string query = "SELECT * FROM players WHERE players.name = %1%";
 	return ConstructOfflinePlayer(str(boost::format(query) % nickname), type);
 }
@@ -130,14 +128,11 @@ bool Lobby::IsOnline(uint32_t playerId)
 
 uint32_t Lobby::GetItemIdByCardId(uint32_t cardId)
 {
-	//TODO: Store all items on server..
-	Database database{};
 	uint32_t itemId = 0;
-	auto result = database.storeQuery(str(boost::format("SELECT item_id FROM player_items WHERE id = %1%") % cardId));
+	auto result = sDatabase->storeQuery(str(boost::format("SELECT item_id FROM player_items WHERE id = %1%") % cardId));
 	if (result != nullptr)
 		itemId =  result->getNumber<uint32_t>("item_id");
 
-	database.Close();
 	return itemId;
 }
 
@@ -164,19 +159,15 @@ bool Lobby::ValidateNickname(std::string nickname)
 		if (StringConverter::ToLowerCase(session->Info()->Nickname()) == nickname)
 			return true;
 
-	//If one with this username is not online, we'll look through the database for existing users
-	Database database{};
-	std::string escapedNick = database.escapeString(nickname);
+	std::string escapedNick = sDatabase->escapeString(nickname);
 	std::string query(str(boost::format("SELECT name FROM players WHERE name = %1%") % escapedNick));
-	auto result = database.storeQuery(query);
-	database.Close();
+	auto result = sDatabase->storeQuery(query);
 	return result != nullptr ? true : false;
 }
 
 OfflinePlayer Lobby::ConstructOfflinePlayer(std::string query, OfflinePlayer::Type queryType)
 {
-	Database database{};
-	auto databaseResult = database.storeQuery(query);
+	auto databaseResult = sDatabase->storeQuery(query);
 	if (databaseResult != nullptr)
 	{
 		uint16_t character = databaseResult->getNumber<uint32_t>("default_character");
@@ -190,7 +181,7 @@ OfflinePlayer Lobby::ConstructOfflinePlayer(std::string query, OfflinePlayer::Ty
 		std::array<uint32_t, 13> equipment{};
 		if (queryType >= OfflinePlayer::Type::MEDIUM)
 		{
-			databaseResult = database.storeQuery(str(boost::format("SELECT * FROM player_equipment WHERE player_id = %1% AND character_id = %2%") % playerId % character));
+			databaseResult = sDatabase->storeQuery(str(boost::format("SELECT * FROM player_equipment WHERE player_id = %1% AND character_id = %2%") % playerId % character));
 
 			if (databaseResult)
 			{
@@ -212,12 +203,10 @@ OfflinePlayer Lobby::ConstructOfflinePlayer(std::string query, OfflinePlayer::Ty
 		{
 			// Query more..
 		}
-		database.Close();
 		return OfflinePlayer{playerId, nickname, level, rank, experience, prestige, character, equipment };
 	}
 	else
 	{
-		database.Close();
 		return OfflinePlayer{};
 	}
 }

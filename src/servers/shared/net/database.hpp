@@ -21,7 +21,6 @@
 #include <boost/lexical_cast.hpp>
 #include "boost/format.hpp"
 
-
 class DBResult;
 using DBResult_ptr = std::shared_ptr<DBResult>;
 
@@ -56,12 +55,19 @@ public:
 
 	uint64_t getMaxPacketSize() const {
 		return maxPacketSize;
+	} 
+
+	static Database* Instance()
+	{
+		static Database authManager;
+		return &authManager;
 	}
 
 private:
 	MYSQL* _mysqlClient;
 	std::recursive_mutex databaseLock;
 	uint64_t maxPacketSize = 1048576;
+	uint32_t reconnectCount = 0;
 
 	bool beginTransaction();
 	bool rollback();
@@ -168,5 +174,7 @@ private:
 
 	TransactionStates_t state = STATE_NO_START;
 };
+
+#define sDatabase Database::Instance()
 
 #endif //_DATABASE_H

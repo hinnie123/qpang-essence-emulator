@@ -14,12 +14,10 @@ void ShopManager::Load()
 {
 	_items.clear();
 
-	Database database{};
-	auto result = database.storeQuery("SELECT * FROM items WHERE status > 0 AND seq_id > 0");
+	auto result = sDatabase->storeQuery("SELECT * FROM items WHERE status > 0 AND seq_id > 0");
 	
 	if (result)
 	{
-		sLogger->Get()->info("Loading shop items");
 		do
 		{
 			std::string name = result->getString("name");
@@ -36,20 +34,11 @@ void ShopManager::Load()
 			uint16_t stock = result->getNumber<uint32_t>("stock");
 			_items.push_back(ShopItem{ name, sequenceId, itemId, itemType, payType, price, useType, period, minLevel, state, soldCount, stock });
 
-			if (_items.size() >= 2460)
-			{
-				sLogger->Get()->warn("Maximum shop items reached: {0:d}", _items.size());
-				break;
-			}
-
 			result->next();
 		} while (result->hasNext());
-		sLogger->Get()->info("{0:d} items were loaded", _items.size());
 	}
 	else
-		sLogger->Get()->error("No shop items were loaded");
-
-	database.Close();
+		sLogger->Get()->error("No item definitions were found in the database");
 }
 
 std::vector<ShopItem> ShopManager::List()
@@ -68,7 +57,6 @@ ShopItem ShopManager::GetItemByItemId(uint32_t itemId)
 
 InventoryCard ShopManager::Buy(ShopItem item, uint32_t playerId)
 {
-	sLogger->Get()->info("Shopmanager: {0:d} bought item with id: {1:d}", playerId, item.itemId);
 	return InventoryCard{ playerId, 0, item.itemId, item.period, item.useType, item.itemType, 1, 1, 0, 0, (uint32_t)time(NULL) };
 }
 

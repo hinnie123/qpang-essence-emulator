@@ -13,9 +13,7 @@ void WeaponManager::Load()
 {
 	_weapons.clear();
 
-	Database database{};
-
-	auto result = database.storeQuery("SELECT * FROM weapons");
+	auto result = sDatabase->storeQuery("SELECT * FROM weapons");
 	if (result != nullptr)
 	{
 		do
@@ -32,8 +30,6 @@ void WeaponManager::Load()
 			result->next();
 		} while (result->hasNext());
 	}
-
-	database.Close();
 }
 
 Weapon WeaponManager::GetWeapon(uint32_t itemId)

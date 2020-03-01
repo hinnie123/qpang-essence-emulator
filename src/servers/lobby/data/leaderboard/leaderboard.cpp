@@ -13,16 +13,12 @@ void Leaderboard::Load()
 {
 	if (_ranking.size())
 	{
-		sLogger->Get()->info("Leaderboard: pushing current ranking to old ranking");
 		_oldRanking = _ranking;
 	}
 
-
-	Database database{};
-	auto result = database.storeQuery("SELECT id, experience FROM players ORDER BY experience DESC");
+	auto result = sDatabase->storeQuery("SELECT id, experience FROM players ORDER BY experience DESC");
 	if (result)
 	{
-		sLogger->Get()->info("Loading new leaderboard");
 
 		int32_t rank = 1;
 		do
@@ -42,7 +38,6 @@ void Leaderboard::Load()
 			rank++;
 		} while (result->hasNext());
 	}
-	database.Close();
 }
 
 Leaderboard::Position Leaderboard::GetRank(uint32_t playerId)

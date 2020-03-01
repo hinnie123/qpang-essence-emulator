@@ -2,13 +2,10 @@
 
 void FriendManager::Load(uint32_t playerId)
 {
-	sLogger->Get()->debug("Loading friends for player id: {0:d}", playerId);
-
-	Database database{};
 	std::string query = "SELECT * FROM friends JOIN players ON players.id = friends.player_to WHERE friends.player_from = %1%";
-	auto result = database.storeQuery(str(boost::format(query) % playerId));
+	auto result = sDatabase->storeQuery(str(boost::format(query) % playerId));
 
-	if (result)
+	if (result != nullptr)
 	{
 		do
 		{
@@ -21,12 +18,8 @@ void FriendManager::Load(uint32_t playerId)
 
 			_friends.push_back(Friend{id, fromPlayerId, toPlayerId, fromPlayerNickname, level, friendshipState});
 			result->next();
-
-			if (_friends.size() >= 20)
-				break;
 		} while (result->hasNext());
 	}
-	database.Close();
 }
 
 std::vector<Friend> FriendManager::List()
@@ -59,31 +52,26 @@ bool FriendManager::HasFriend(std::string username)
 
 bool FriendManager::AddFriend(Friend friendToAdd, State state)
 {
-	sLogger->Get()->debug("Adding friend: {0:d}", friendToAdd.id);
-
 	if (HasFriend(friendToAdd.nickname))
 		return false;
 
 	if (_friends.size() >= MAX_FRIENDS)
 		return false;
 
-	Database database{};
 	bool result;
 
 	//TODO: Put this somewhere else?
 	if (state != State::BOTH)
 	{
 		friendToAdd.state = static_cast<uint8_t>(state);
-		result = database.executeQuery(str(boost::format("INSERT INTO friends (player_from, player_to, status) VALUES (%1%, %2%, %3%)") % friendToAdd.fromId % friendToAdd.toPlayerId % state));
+		result = sDatabase->executeQuery(str(boost::format("INSERT INTO friends (player_from, player_to, status) VALUES (%1%, %2%, %3%)") % friendToAdd.fromId % friendToAdd.toPlayerId % state));
 	}
 	else
 	{
-		result = database.executeQuery(str(boost::format("INSERT INTO friends (player_from, player_to, status) VALUES (%1%, %2%, %3%)") % friendToAdd.fromId % friendToAdd.toPlayerId % State::OUTGOING));
-		database.executeQuery(str(boost::format("INSERT INTO friends (player_from, player_to, status) VALUES (%1%, %2%, %3%)") % friendToAdd.toPlayerId % friendToAdd.fromId % State::INCOMING));
+		result = sDatabase->executeQuery(str(boost::format("INSERT INTO friends (player_from, player_to, status) VALUES (%1%, %2%, %3%)") % friendToAdd.fromId % friendToAdd.toPlayerId % State::OUTGOING));
+		sDatabase->executeQuery(str(boost::format("INSERT INTO friends (player_from, player_to, status) VALUES (%1%, %2%, %3%)") % friendToAdd.toPlayerId % friendToAdd.fromId % State::INCOMING));
 		friendToAdd.state = static_cast<uint8_t>(State::OUTGOING);
 	}
-
-	database.Close();
 
 	if(result)
 		_friends.push_back(friendToAdd);
@@ -93,16 +81,13 @@ bool FriendManager::AddFriend(Friend friendToAdd, State state)
 
 Friend FriendManager::AcceptFriend(uint32_t friendId)
 {
-	sLogger->Get()->debug("Accepting friend, friend id: {0:d}", friendId);
 	if (HasFriend(friendId))
 	{
 		for (auto it = _friends.begin(); it != _friends.end(); it++)
 		{
 			if (it->toPlayerId == friendId)
 			{
-				Database database{};
-				database.executeQuery(str(boost::format("UPDATE friends SET status = 1 WHERE (user_from = %1% AND user_to = %2% ) OR (user_from = %2% AND user_to = %1% )") % it->toPlayerId % it->fromId));
-				database.Close();
+				sDatabase->executeQuery(str(boost::format("UPDATE friends SET status = 1 WHERE (user_from = %1% AND user_to = %2% ) OR (user_from = %2% AND user_to = %1% )") % it->toPlayerId % it->fromId));
 				it->state = State::FRIENDS;
 				return *it;
 			}
@@ -112,16 +97,13 @@ Friend FriendManager::AcceptFriend(uint32_t friendId)
 
 bool FriendManager::RemoveFriend(uint32_t targetId)
 {
-	sLogger->Get()->debug("Removing friend, player id: {0:d}", targetId);
 	if (HasFriend(targetId))
 	{
 		for (auto it = _friends.begin(); it != _friends.end(); it++)
 		{
 			if (it->toPlayerId == targetId)
 			{
-				Database database{};
-				bool result = database.executeQuery(str(boost::format("DELETE FROM friends WHERE (player_from = %1% AND player_to = %2%) OR (player_from = %2% AND player_to = %1%)") % it->toPlayerId % it->fromId));
-				database.Close();
+				bool result = sDatabase->executeQuery(str(boost::format("DELETE FROM friends WHERE (player_from = %1% AND player_to = %2%) OR (player_from = %2% AND player_to = %1%)") % it->toPlayerId % it->fromId));
 				_friends.erase(it);
 				return result;
 			}

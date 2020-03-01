@@ -13,8 +13,7 @@ InventoryManager::~InventoryManager()
 
 void InventoryManager::Load(uint32_t playerId)
 {
-	Database database{};
-	auto result = database.storeQuery(str(boost::format("SELECT * FROM player_items WHERE player_id = %1% ORDER BY time DESC") % playerId));
+	auto result = sDatabase->storeQuery(str(boost::format("SELECT * FROM player_items WHERE player_id = %1% ORDER BY time DESC") % playerId));
 	if (result != nullptr)
 	{
 		do
@@ -37,7 +36,6 @@ void InventoryManager::Load(uint32_t playerId)
 				break;
 		} while (result->hasNext());
 	}
-	database.Close();
 }
 
 std::vector<InventoryCard> InventoryManager::List()
@@ -64,9 +62,7 @@ bool InventoryManager::RemoveItem(uint32_t cardId)
 		{
 			_items.erase(it);
 
-			Database database{};
-			database.executeQuery(str(boost::format("DELETE FROM player_items WHERE id = %1%") % cardId));
-			database.Close();
+			sDatabase->executeQuery(str(boost::format("DELETE FROM player_items WHERE id = %1%") % cardId));
 
 			return true;
 		}
@@ -80,8 +76,7 @@ InventoryCard InventoryManager::AddItem(InventoryCard card)
 	if (_items.size() >= MAX_INVENTORY)
 		return InventoryCard{};
 
-	Database database{};
-	bool result = database.executeQuery(
+	bool result = sDatabase->executeQuery(
 		"INSERT INTO player_items (player_id, item_id, period, period_type, type, opened, giftable, boost_level, boosted, time) VALUES "
 		"("
 		"" + std::to_string(card.ownerId) + ","
@@ -97,10 +92,9 @@ InventoryCard InventoryManager::AddItem(InventoryCard card)
 		")"
 	);
 
-	uint64_t cardId = database.getLastInsertId();
+	uint64_t cardId = sDatabase->getLastInsertId();
 	card.id = cardId;
 	card.timeCreated = time(NULL);
-	database.Close();
 
 	if (!result)
 		return InventoryCard{};
@@ -112,10 +106,8 @@ InventoryCard InventoryManager::AddItem(InventoryCard card)
 bool InventoryManager::SendGift(uint32_t targetId, InventoryCard cardToGift)
 {
 
-	Database database{};
 	std::string query = "UPDATE player_items SET player_id = %1%, opened = 0, time = %2%  WHERE id = %3%";
-	bool result = database.executeQuery(str(boost::format(query) % targetId % time(NULL) % cardToGift.id));
-	database.Close();
+	bool result = sDatabase->executeQuery(str(boost::format(query) % targetId % time(NULL) % cardToGift.id));
 
 	if (!result)
 		return false;
@@ -145,9 +137,7 @@ bool InventoryManager::OpenGift(uint32_t cardId)
 
 	if (opened)
 	{
-		Database database{};
-		database.executeQuery(str(boost::format("UPDATE player_items SET opened = 1, time = %1% WHERE id = %2%") % time(NULL) % cardId));
-		database.Close();
+		sDatabase->executeQuery(str(boost::format("UPDATE player_items SET opened = 1, time = %1% WHERE id = %2%") % time(NULL) % cardId));
 	}
 
 	return opened;

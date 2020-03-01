@@ -11,8 +11,7 @@ EquipmentManager::~EquipmentManager()
 
 void EquipmentManager::Load(uint32_t playerId)
 {
-	Database database{};
-	auto result = database.storeQuery(str(boost::format("SELECT * FROM player_equipment WHERE player_id = %1%") % playerId));
+	auto result = sDatabase->storeQuery(str(boost::format("SELECT * FROM player_equipment WHERE player_id = %1%") % playerId));
 	if (result != nullptr)
 	{
 		do
@@ -44,12 +43,10 @@ void EquipmentManager::Load(uint32_t playerId)
 			}
 		}
 	}
-	database.Close();
 }
 
 void EquipmentManager::Save(uint32_t playerId)
 {
-	Database database{};
 	std::string query;
 
 	for (size_t i = 0; i < _equipment.size(); i++)
@@ -57,23 +54,22 @@ void EquipmentManager::Save(uint32_t playerId)
 		query = std::string();
 		std::array<uint64_t, 13> characterEquipment = _equipment[i];
 		query += "UPDATE player_equipment SET "
-			" `melee` = " + database.validateValue(characterEquipment[MELEE]) + ", "
-			" `primary` = " + database.validateValue(characterEquipment[PRIMARY]) + ", "
-			" `secondary` = " + database.validateValue(characterEquipment[SECONDARY]) + ", "
-			" `throw` = " + database.validateValue(characterEquipment[THROW]) + ", "
-			" `head` = " + database.validateValue(characterEquipment[HEAD]) + ", "
-			" `face` = " + database.validateValue(characterEquipment[FACE]) + ", "
-			" `body` = " + database.validateValue(characterEquipment[BODY]) + ", "
-			" `hands` = " + database.validateValue(characterEquipment[HAND]) + ", "
-			" `legs` = " + database.validateValue(characterEquipment[BOTTOM]) + ", "
-			" `shoes` = " + database.validateValue(characterEquipment[FOOT]) + ", "
-			" `back` = " + database.validateValue(characterEquipment[BACK]) + ", "
-			" `side` = " + database.validateValue(characterEquipment[SIDE]) + " "
+			" `melee` = " + sDatabase->validateValue(characterEquipment[MELEE]) + ", "
+			" `primary` = " + sDatabase->validateValue(characterEquipment[PRIMARY]) + ", "
+			" `secondary` = " + sDatabase->validateValue(characterEquipment[SECONDARY]) + ", "
+			" `throw` = " + sDatabase->validateValue(characterEquipment[THROW]) + ", "
+			" `head` = " + sDatabase->validateValue(characterEquipment[HEAD]) + ", "
+			" `face` = " + sDatabase->validateValue(characterEquipment[FACE]) + ", "
+			" `body` = " + sDatabase->validateValue(characterEquipment[BODY]) + ", "
+			" `hands` = " + sDatabase->validateValue(characterEquipment[HAND]) + ", "
+			" `legs` = " + sDatabase->validateValue(characterEquipment[BOTTOM]) + ", "
+			" `shoes` = " + sDatabase->validateValue(characterEquipment[FOOT]) + ", "
+			" `back` = " + sDatabase->validateValue(characterEquipment[BACK]) + ", "
+			" `side` = " + sDatabase->validateValue(characterEquipment[SIDE]) + " "
 			;
 		query += " WHERE (player_id, character_id) IN ((" + std::to_string(playerId) + ", " + std::to_string(GetCharacterCode(i)) + "))";
-		database.executeQuery(query);
+		sDatabase->executeQuery(query);
 	}
-	database.Close();
 }
 
 void EquipmentManager::SetEquipmentPart(Character character, EquipmentSlot slot, uint64_t cardId)

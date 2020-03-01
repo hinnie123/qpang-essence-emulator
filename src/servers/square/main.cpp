@@ -9,12 +9,7 @@ int32_t main()
 {
 
 	sLogger->Init("Squareserver");
-
-	Database database{};
-	{
-		sSettings->Initialize();
-		database.Close();
-	}
+	sSettings->Initialize();
 
 	SquareServer squareServer{};
 	squareServer.Initialize(
