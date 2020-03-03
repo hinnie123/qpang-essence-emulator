@@ -21,10 +21,7 @@ uint64_t ClientPacket::ReadLong()
 {
 	Validate(8);
 
-	uint64_t x;
-
-	memcpy(&x, buffer.data() + bufferPosition, 8);
-
+	uint64_t x = *reinterpret_cast<uint64_t*>(buffer.data() + bufferPosition);
 	this->bufferPosition += 8;
 
 	return x;
@@ -34,10 +31,7 @@ uint32_t ClientPacket::ReadInt()
 {
 	Validate(4);
 
-	uint32_t x;
-
-	memcpy(&x, buffer.data() + bufferPosition, 4);
-
+	uint32_t x = *reinterpret_cast<uint32_t*>(buffer.data() + bufferPosition);
 	this->bufferPosition += 4;
 	
 	return x;
@@ -47,10 +41,7 @@ uint16_t ClientPacket::ReadShort()
 {
 	Validate(2);
 
-	uint16_t x;
-
-	memcpy(&x, buffer.data() + bufferPosition, 2);
-
+	uint16_t x = *reinterpret_cast<uint16_t*>(buffer.data() + bufferPosition);
 	this->bufferPosition += 2;
 
 	return x;
@@ -60,10 +51,7 @@ uint8_t ClientPacket::ReadByte()
 {
 	Validate(1);
 
-	uint8_t x;
-	
-	x = buffer[bufferPosition];
-
+	uint8_t x = buffer[bufferPosition];
 	this->bufferPosition++;
 
 	return x;
