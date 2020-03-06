@@ -28,7 +28,10 @@ public:
 		{
 			// Doesn't exist yet, add it.
 			TradeInfo info{};
-			info.proposedItems.push_back(dbItemIndex);
+
+			if (state == 100)
+				info.proposedItems.push_back(dbItemIndex);
+
 			info.didFinish = false;
 
 			trades.emplace(session->Info()->Id(), info);
@@ -42,8 +45,16 @@ public:
 				return;
 			}
 
-			// Already exists, just add item to vector.
-			trades[session->Info()->Id()].proposedItems.push_back(dbItemIndex);
+			// Already exists, just add/remove item to/from vector.
+			if (state == 100)
+				trades[session->Info()->Id()].proposedItems.push_back(dbItemIndex);
+			else if (state == 101)
+			{
+				// Removing the item from the vector
+				auto pos = std::find(trades[session->Info()->Id()].proposedItems.begin(), trades[session->Info()->Id()].proposedItems.end(), dbItemIndex);
+				if (pos != trades[session->Info()->Id()].proposedItems.end())
+					trades[session->Info()->Id()].proposedItems.erase(pos);
+			}
 		}
 
 		// This works only for the client that sends the packet, because it stored the information
