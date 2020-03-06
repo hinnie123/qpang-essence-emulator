@@ -10,9 +10,9 @@
 #include "cards_response_event.hpp"
 #include "trade.hpp"
 
-class TradeCancelEvent : public LobbyPacketEvent {
+class TradeStatusEvent : public LobbyPacketEvent {
 public:
-	TradeCancelEvent() : LobbyPacketEvent() {};
+	TradeStatusEvent() : LobbyPacketEvent() {};
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
 		uint32_t targetPlayerId = pack.ReadInt();

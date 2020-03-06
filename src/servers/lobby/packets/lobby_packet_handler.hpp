@@ -102,7 +102,7 @@ public:
 		_events[Opcode::LOBBY_SHOP_GIFT] = new GiftShopCardEvent();
 		_events[Opcode::LOBBY_TRADE] = new LobbyTradeEvent();
 		_events[Opcode::LOBBY_TRADE_REQUEST] = new TradeRequestEvent();
-		_events[Opcode::LOBBY_TRADE_CANCEL] = new TradeCancelEvent();
+		_events[Opcode::LOBBY_TRADE_CANCEL] = new TradeStatusEvent();
 		_events[Opcode::LOBBY_TRADE_ADD_CARD] = new TradeAddCardEvent();
 		_events[Opcode::LOBBY_PLAYERINFO] = new PlayerInfoEvent();
 		_events[Opcode::LOBBY_FRIEND_INVITE] = new AddFriendEvent();
