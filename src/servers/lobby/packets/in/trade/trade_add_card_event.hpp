@@ -17,11 +17,7 @@ public:
 		uint8_t state = pack.ReadByte(); // 100 = add, 101 = remove, 102? not sure
 		uint32_t unk = pack.ReadInt();
 
-		std::array<char, 40> cardInfo;
-		for (size_t i = 0; i < cardInfo.size(); ++i)
-		{
-			cardInfo[i] = pack.buffer[i + pack.bufferPosition];
-		}
+		std::array<char, 40> cardInfo = pack.ReadArray<char, 40>();
 
 		uint64_t dbItemIndex = pack.ReadLong();
 		if (!trades.count(session->Info()->Id()))
