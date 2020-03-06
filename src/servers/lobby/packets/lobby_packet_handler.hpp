@@ -54,6 +54,10 @@
 #include "reload_leaderboard.hpp"
 #include "request_auth_event.hpp"
 #include "update_gameroom_event.hpp"
+#include "trade_request_event.hpp"
+#include "trade_event.hpp"
+#include "trade_cancel_event.hpp"
+#include "trade_add_card_event.hpp"
 //END EVENTS
 
 #include "opcodes.hpp"
@@ -96,6 +100,10 @@ public:
 		_events[Opcode::LOBBY_OPEN_PLAYER_CARD] = new OpenCardEvent();
 		_events[Opcode::LOBBY_BUY_ITEM] = new BuyCardEvent();
 		_events[Opcode::LOBBY_SHOP_GIFT] = new GiftShopCardEvent();
+		_events[Opcode::LOBBY_TRADE] = new LobbyTradeEvent();
+		_events[Opcode::LOBBY_TRADE_REQUEST] = new TradeRequestEvent();
+		_events[Opcode::LOBBY_TRADE_CANCEL] = new TradeCancelEvent();
+		_events[Opcode::LOBBY_TRADE_ADD_CARD] = new TradeAddCardEvent();
 		_events[Opcode::LOBBY_PLAYERINFO] = new PlayerInfoEvent();
 		_events[Opcode::LOBBY_FRIEND_INVITE] = new AddFriendEvent();
 		_events[Opcode::LOBBY_REMOVE_OUTGOING_FRIEND] = new RemoveOutgoingFriendEvent();
