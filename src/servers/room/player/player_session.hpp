@@ -42,6 +42,11 @@ public:
 	void AddStreak();
 
 	/**
+	 * \brief Add a score point (kills in team death match, essence time, VIP kills etc)
+	 */
+	void AddScore();
+
+	/**
 	 * \brief Add X amount of coins to the current session
 	 * \param coins 
 	 */
@@ -161,6 +166,12 @@ public:
 	uint32_t GetWeapon() const;
 
 	/**
+	 * \brief return the score for this session
+	 * \return uint32_t
+	 */
+	uint32_t GetScore() const;
+
+	/**
 	 * \brief retyrns all the weapons for this session
 	 * \return std::array<uint32_t, 4>
 	 */
@@ -209,6 +220,7 @@ private:
 	uint16_t m_health;
 	uint16_t m_character;
 	uint32_t m_weapon;
+	uint32_t m_score;
 	bool m_invincible;
 
 	std::mutex m_connectionMx;

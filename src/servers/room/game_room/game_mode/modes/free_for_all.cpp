@@ -1,6 +1,13 @@
 #include "team_death_match.hpp"
 #include "game_room.hpp"
 
+void FreeForAll::OnPlayerKill(const std::shared_ptr<GameRoomSession>& roomSession, const Player::Ptr & killer, const Player::Ptr & target)
+{
+	killer->GetSession()->AddScore();
+
+	Parent::OnPlayerKill(roomSession, killer, target);
+}
+
 void FreeForAll::OnApply(const std::shared_ptr<GameRoom>& room)
 {
 	room->BalancePlayers();

@@ -229,9 +229,9 @@ void GameRoomSession::SpawnPlayer(Player::Ptr playerToSpawn)
 
 	std::for_each(m_players.begin(), m_players.end(),
 		[playerToSpawn, spawn](Player::Ptr player)
-		{
-			player->GetConnection()->SpawnPlayer(playerToSpawn, spawn);
-		});
+	{
+		player->GetConnection()->SpawnPlayer(playerToSpawn, spawn);
+	});
 
 	RegisterEvent(std::bind(&GameRoomSession::RemoveInvincibility, this, playerToSpawn->GetIdentifier()), GetTick() + 5);
 }
@@ -242,14 +242,14 @@ void GameRoomSession::SpawnPlayersFor(Player::Ptr player)
 
 	std::for_each(m_players.begin(), m_players.end(),
 		[player](Player::Ptr playerToSpawn)
+	{
+		if (player == playerToSpawn)
 		{
-			if (player == playerToSpawn)
-			{
-				return;
-			}
-			player->GetConnection()->SpawnPlayer(playerToSpawn, { 0xFF, 0xFF, 0xFF });
-			player->GetConnection()->RemoveInvincibility(playerToSpawn->GetIdentifier());
-		});
+			return;
+		}
+		player->GetConnection()->SpawnPlayer(playerToSpawn, { 0xFF, 0xFF, 0xFF });
+		player->GetConnection()->RemoveInvincibility(playerToSpawn->GetIdentifier());
+	});
 }
 
 void GameRoomSession::StartRespawning(Player::Ptr player, uint8_t seconds)
@@ -263,17 +263,17 @@ void GameRoomSession::RemoveInvincibility(uint32_t targetId)
 
 	std::for_each(m_players.begin(), m_players.end(),
 		[targetId](Player::Ptr player)
+	{
+		if (player == nullptr)
+			return;
+
+		if (player->GetIdentifier() == targetId)
 		{
-			if (player == nullptr)
-				return;
+			player->GetSession()->SetInvincible(false);
+		}
 
-			if (player->GetIdentifier() == targetId)
-			{
-				player->GetSession()->SetInvincible(false);
-			}
-
-			player->GetConnection()->RemoveInvincibility(targetId);
-		});
+		player->GetConnection()->RemoveInvincibility(targetId);
+	});
 }
 
 void GameRoomSession::AddKillfeed(uint32_t killerIdentifier, uint32_t targetIdentifier, uint32_t weaponIdentifier, bool isHeadshot)
@@ -301,7 +301,7 @@ ScoreBoard GameRoomSession::GenerateScoreBoard()
 			player->GetName(),
 			player->GetSession()->GetKills(),
 			player->GetSession()->GetDeaths(),
-			0
+			player->GetSession()->GetScore()
 			});
 	}
 

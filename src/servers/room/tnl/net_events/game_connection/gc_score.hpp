@@ -44,6 +44,9 @@ public:
 
 		auto scoreBoard = room->GenerateScoreBoard();
 
+		this->blueTotalKill = scoreBoard.GetBlueScore();
+		this->yellowTotalKill = scoreBoard.GetYellowscore();
+
 		this->cmd = byGame ? -56 : 1;
 		this->m_players = scoreBoard.GetResults();
 	};
@@ -79,10 +82,10 @@ public:
 	std::vector<ScoreBoard::Player> m_players;
 	U8 cmd = -56;
 	U16 unk_02 = 0;
-	U16 blueTotalKill = 0;
+	U16 blueTotalKill = 5;
 	U16 blueTotalDeath = 0;
 	U16 unk_03 = 0;
-	U16 yellowTotalKill = 0;
+	U16 yellowTotalKill = 7;
 	U16 yellowTotalDeath = 0;
 	U32 unk_04 = 1;
 

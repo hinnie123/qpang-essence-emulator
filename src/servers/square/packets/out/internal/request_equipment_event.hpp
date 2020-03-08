@@ -12,6 +12,8 @@ public:
 
 	ServerPacket Compose(SquareSession* session) override
 	{
+
+
 		Packets::Internal::RequestEquipment rsp{};
 		rsp.playerId = _playerId;
 		return ServerPacket::Create<Opcode::REQUEST_EQUIPMENT>(rsp);

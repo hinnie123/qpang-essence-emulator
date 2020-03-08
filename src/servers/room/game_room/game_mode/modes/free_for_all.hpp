@@ -17,6 +17,7 @@ public:
 	FreeForAll() = default;
 	~FreeForAll() = default;
 
+	void OnPlayerKill(const std::shared_ptr<GameRoomSession>& roomSession, const Player::Ptr& killer, const Player::Ptr& target) override;
 	void OnApply(const std::shared_ptr<GameRoom>& room) override;
 	bool IsTeamMode() override;
 

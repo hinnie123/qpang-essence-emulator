@@ -12,7 +12,8 @@ PlayerSession::PlayerSession(uint16_t character, std::array<uint32_t, 4> weapons
 	m_don(0),
 	m_cash(0),
 	m_experience(0),
-	m_invincible(false)
+	m_invincible(false),
+	m_score(0)
 {
 	for (auto weapon : m_weapons)
 	{
@@ -37,6 +38,11 @@ void PlayerSession::AddDeath()
 void PlayerSession::AddStreak()
 {
 	m_streak++;
+}
+
+void PlayerSession::AddScore()
+{
+	m_score++;
 }
 
 void PlayerSession::AddCoins(uint32_t coins)
@@ -168,6 +174,11 @@ uint32_t PlayerSession::GetWeapon() const
 	return m_weapon;
 }
 
+uint32_t PlayerSession::GetScore() const
+{
+	return m_score;
+}
+
 std::array<uint32_t, 4> PlayerSession::GetWeapons() const
 {
 	return m_weapons;
@@ -213,4 +224,5 @@ void PlayerSession::Reset()
 	m_don = 0;
 	m_cash = 0;
 	m_experience = 0;
+	m_score = 0;
 }

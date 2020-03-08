@@ -4,6 +4,10 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include <numeric>
+#include <functional>
+
+#include "team.hpp"
 
 
 class ScoreBoard
@@ -23,6 +27,10 @@ public:
 
 	ScoreBoard() = default;
 	~ScoreBoard() = default;
+
+	uint16_t GetBlueScore();
+	uint16_t GetYellowscore();
+	uint16_t GetValueLeader();
 
 	void AddPlayer(ScoreBoard::Player player);
 	std::vector<ScoreBoard::Player> GetResults();

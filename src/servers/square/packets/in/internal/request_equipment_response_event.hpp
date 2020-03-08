@@ -34,6 +34,7 @@ public:
 
 			if (targetSession != nullptr)
 			{
+				targetSession->Info()->SetState(0);
 				targetSession->Info()->SetId(playerId);
 				targetSession->Info()->SetCharacter(character);
 				targetSession->Info()->SetEquipment(equipment);
