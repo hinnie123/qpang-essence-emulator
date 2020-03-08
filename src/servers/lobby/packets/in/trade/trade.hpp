@@ -4,9 +4,12 @@
 #include <vector>
 #include <unordered_map>
 
+#include "lobby_session.hpp"
+
 struct TradeInfo
 {
 	std::vector<uint64_t> proposedItems;
+	LobbySession* tradingWith;
 	bool didFinish;
 };
 

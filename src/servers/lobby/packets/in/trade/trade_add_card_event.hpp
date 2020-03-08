@@ -14,52 +14,42 @@ public:
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
 		uint32_t targetPlayerId = pack.ReadInt();
+
+		// Check if this person is trading, and if he is, if he's trading with the playerid the client has sent
+		if (!trades.count(session->Info()->Id()) || trades[session->Info()->Id()].tradingWith->Info()->Id() != targetPlayerId)
+			return;
+
+		LobbySession* target = trades[session->Info()->Id()].tradingWith;
+		if (target == nullptr)
+			return;
+
 		uint8_t state = pack.ReadByte(); // 100 = add, 101 = remove, 102? not sure
 		uint32_t unk = pack.ReadInt();
 
 		std::array<char, 40> cardInfo = pack.ReadArray<char, 40>();
 
-		uint64_t dbItemIndex = pack.ReadLong();
-		if (!trades.count(session->Info()->Id()))
+		uint64_t dbItemIndex = *(uint64_t*)(&cardInfo[0]);
+		if (trades[session->Info()->Id()].didFinish)
 		{
-			// Doesn't exist yet, add it.
-			TradeInfo info{};
-
-			if (state == 100)
-				info.proposedItems.push_back(dbItemIndex);
-
-			info.didFinish = false;
-
-			trades.emplace(session->Info()->Id(), info);
+			// Oh man, this faggot, oof. He just tried to do the trade bug: https://www.youtube.com/watch?v=VuCp8gVZ2XU
+			// But we canceled it :)
+			return;
 		}
-		else
-		{
-			if (trades[session->Info()->Id()].didFinish)
-			{
-				// Oh man, this faggot, oof. He just tried to do the trade bug: https://www.youtube.com/watch?v=VuCp8gVZ2XU
-				// But we canceled it :)
-				return;
-			}
 
-			// Already exists, just add/remove item to/from vector.
-			if (state == 100)
-				trades[session->Info()->Id()].proposedItems.push_back(dbItemIndex);
-			else if (state == 101)
-			{
-				// Removing the item from the vector
-				auto pos = std::find(trades[session->Info()->Id()].proposedItems.begin(), trades[session->Info()->Id()].proposedItems.end(), dbItemIndex);
-				if (pos != trades[session->Info()->Id()].proposedItems.end())
-					trades[session->Info()->Id()].proposedItems.erase(pos);
-			}
+		if (state == 100)
+			trades[session->Info()->Id()].proposedItems.push_back(dbItemIndex);
+		else if (state == 101)
+		{
+			// Removing the item from the vector
+			auto pos = std::find(trades[session->Info()->Id()].proposedItems.begin(), trades[session->Info()->Id()].proposedItems.end(), dbItemIndex);
+			if (pos != trades[session->Info()->Id()].proposedItems.end())
+				trades[session->Info()->Id()].proposedItems.erase(pos);
 		}
 
 		// This works only for the client that sends the packet, because it stored the information
 		// about the card itself.
 		session->Send(TradeAddCardSelfEvent{ targetPlayerId }.Compose(session));
-
-		auto target = session->GetLobby()->FindSession(targetPlayerId);
-		if (target != nullptr)
-			target->Send(TradeAddCardOtherEvent{ session->Info()->Id(), state, unk, cardInfo }.Compose(target.get()));
+		target->Send(TradeAddCardOtherEvent{ session->Info()->Id(), state, unk, cardInfo }.Compose(target));
 	}
 };
 

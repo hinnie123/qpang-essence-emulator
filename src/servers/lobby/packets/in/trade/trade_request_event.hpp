@@ -37,9 +37,8 @@ public:
 				{
 					// Add them to the trades map, so if someone tries to trade with a person that's already trading it will tell them that
 					// the person is already trading.
-					TradeInfo tradeInfo{ {}, false };
-					trades[targetPlayerId] = tradeInfo;
-					trades[session->Info()->Id()] = tradeInfo;
+					trades[targetPlayerId] = TradeInfo{ {}, session, false};
+					trades[session->Info()->Id()] = TradeInfo{ {}, target.get(), false };
 
 					target->Send(LobbyTradeResponseEvent{ session->Info()->Id(), didAccept }.Compose(target.get()));
 					target->Send(OpenTradeMenuEvent{ session->Info()->Id(), didAccept }.Compose(target.get()));

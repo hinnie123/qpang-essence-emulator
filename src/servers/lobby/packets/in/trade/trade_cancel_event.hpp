@@ -16,6 +16,15 @@ public:
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
 		uint32_t targetPlayerId = pack.ReadInt();
+
+		// Check if this person is trading, and if he is, if he's trading with the playerid the client has sent
+		if (!trades.count(session->Info()->Id()) || trades[session->Info()->Id()].tradingWith->Info()->Id() != targetPlayerId)
+			return;
+
+		LobbySession* target = trades[session->Info()->Id()].tradingWith;
+		if (target == nullptr)
+			return;
+
 		uint8_t state = pack.ReadByte(); // 50 = cancel, 51 = confirm (lock trade), 52 = yes (finish trade)
 		if (state == 50)
 		{
@@ -24,19 +33,13 @@ public:
 			trades.erase(targetPlayerId);
 
 			session->Send(TradeCancelSelfEvent{ targetPlayerId, state }.Compose(session));
-
-			auto target = session->GetLobby()->FindSession(targetPlayerId);
-			if (target != nullptr)
-				target->Send(TradeCancelOtherEvent{ session->Info()->Id(), state }.Compose(target.get()));
+			target->Send(TradeCancelOtherEvent{ session->Info()->Id(), state }.Compose(target));
 		}
 		else if (state == 51)
 		{
 			// Client pressed confirm, notify other client
 			session->Send(TradeCancelSelfEvent{ targetPlayerId, state }.Compose(session));
-
-			auto target = session->GetLobby()->FindSession(targetPlayerId);
-			if (target != nullptr)
-				target->Send(TradeCancelOtherEvent{ session->Info()->Id(), state }.Compose(target.get()));
+			target->Send(TradeCancelOtherEvent{ session->Info()->Id(), state }.Compose(target));
 		}
 		else if (state == 52)
 		{
@@ -47,15 +50,7 @@ public:
 			if (!trades.count(targetPlayerId) || !trades[targetPlayerId].didFinish)
 			{
 				// Other player didn't press yes yet, so store this player, and then wait for the other player to also press yes
-				if (!trades.count(session->Info()->Id()))
-				{
-					TradeInfo info{};
-					info.didFinish = true;
-
-					trades.emplace(session->Info()->Id(), info);
-				}
-				else
-					trades[session->Info()->Id()].didFinish = true;
+				trades[session->Info()->Id()].didFinish = true;
 			}
 			else
 			{
@@ -68,39 +63,35 @@ public:
 				trades.erase(session->Info()->Id());
 				trades.erase(targetPlayerId);
 
-				auto target = session->GetLobby()->FindSession(targetPlayerId);
-				if (target != nullptr)
+				// Actually trade the items
+				for (uint64_t proposedItemId : myProposedItems)
 				{
-					// Actually trade the items
-					for (uint64_t proposedItemId : myProposedItems)
-					{
-						InventoryCard card = session->Inventory()->GetItemByCardId(proposedItemId);
-						card.ownerId = targetPlayerId;
+					InventoryCard card = session->Inventory()->GetItemByCardId(proposedItemId);
+					card.ownerId = targetPlayerId;
 
-						target->Inventory()->AddItem(card);
-						session->Inventory()->RemoveItem(proposedItemId);
-					}
-
-					for (uint64_t proposedItemId : targetProposedItems)
-					{
-						InventoryCard card = target->Inventory()->GetItemByCardId(proposedItemId);
-						card.ownerId = session->Info()->Id();
-
-						session->Inventory()->AddItem(card);
-						target->Inventory()->RemoveItem(proposedItemId);
-					}
-
-					// Update both players their inventories
-					std::vector<InventoryCard> cards = session->Inventory()->List();
-					session->Send(CardsResponseEvent{ cards }.Compose(session));
-
-					cards = target->Inventory()->List();
-					target->Send(CardsResponseEvent{ cards }.Compose(target.get()));
-
-					// Notify both players that the trade has succesfully ended
-					session->Send(TradeFinishedEvent{ targetPlayerId }.Compose(session));
-					target->Send(TradeFinishedEvent{ session->Info()->Id() }.Compose(target.get()));
+					target->Inventory()->AddItem(card);
+					session->Inventory()->RemoveItem(proposedItemId);
 				}
+
+				for (uint64_t proposedItemId : targetProposedItems)
+				{
+					InventoryCard card = target->Inventory()->GetItemByCardId(proposedItemId);
+					card.ownerId = session->Info()->Id();
+
+					session->Inventory()->AddItem(card);
+					target->Inventory()->RemoveItem(proposedItemId);
+				}
+
+				// Update both players their inventories
+				std::vector<InventoryCard> cards = session->Inventory()->List();
+				session->Send(CardsResponseEvent{ cards }.Compose(session));
+
+				cards = target->Inventory()->List();
+				target->Send(CardsResponseEvent{ cards }.Compose(target));
+
+				// Notify both players that the trade has succesfully ended
+				session->Send(TradeFinishedEvent{ targetPlayerId }.Compose(session));
+				target->Send(TradeFinishedEvent{ session->Info()->Id() }.Compose(target));
 			}
 		}
 	}

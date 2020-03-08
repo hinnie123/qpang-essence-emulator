@@ -17,6 +17,7 @@ public:
 		if (target != nullptr)
 		{
 			target->Send(ReceiveTradeEvent{ session->Info()->Id() }.Compose(target.get()));
+			session->Send(ServerPacket::Create<Opcode::LOBBY_TRADE_RSP>());
 		}
 	}
 };

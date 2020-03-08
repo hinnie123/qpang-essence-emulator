@@ -4,6 +4,8 @@
 #include "channel_manager.hpp"
 #include "set_offline_event.hpp"
 
+#include "trade.hpp"
+
 LobbySession::LobbySession(Connection::Ptr connection)
 	: Session{ connection }
 {
@@ -43,6 +45,15 @@ void LobbySession::Whisper(std::string message)
 
 void LobbySession::HandleClose()
 {
+	if (trades.count(userId))
+	{
+		// This person is still trading, cancel his trade before letting him go.
+		trades[userId].tradingWith->Send(TradeCancelOtherEvent{ userId, 50 }.Compose(trades[userId].tradingWith));
+
+		trades.erase(trades[userId].tradingWith->Info()->Id());
+		trades.erase(userId);
+	}
+
 	_lobby->RemoveSession(userId);
 }
 
