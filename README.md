@@ -18,7 +18,7 @@ Though, this server provides pretty much every feature the game had. Except for 
 
 ## Instructions
 
-[Server set-up instructions](https://gist.github.com/Deluze/2935e17fd6b80c1c16a6a5c0b952c723)
+[Server set-up instructions](https://github.com/Deluze/qpang-essence-emulator/blob/master/set-up%20instructions.md)
 
 
 ### Contributors & Thanks
