@@ -14,7 +14,7 @@
 class PlayerInfoResponseEvent : public LobbyPacketEvent {
 
 public:
-	PlayerInfoResponseEvent(uint32_t playerId, std::string nickname ,uint32_t level, uint32_t rank, uint32_t character, uint32_t experience, std::array<uint32_t, 13> equipment)
+	PlayerInfoResponseEvent(uint32_t playerId, std::u16string nickname ,uint32_t level, uint32_t rank, uint32_t character, uint32_t experience, std::array<uint32_t, 13> equipment)
 	{ 
 		_playerId = playerId;
 		_nickname = nickname;
@@ -31,7 +31,7 @@ public:
 
 		packet.WriteInt(_playerId);
 		packet.WriteEmpty(42);
-		packet.WriteUtf16String(StringConverter::Utf8ToUtf16(_nickname), 16); // TODO: Change this
+		packet.WriteUtf16String(_nickname, 16); // TODO: Change this
 		packet.WriteInt(0); // playtime
 		packet.WriteEmpty(4); // unknown
 		packet.WriteByte(_level);
@@ -83,7 +83,7 @@ public:
 
 private:
 	uint32_t _playerId;
-	std::string _nickname;
+	std::u16string _nickname;
 	uint32_t _level;
 	uint32_t _rank;
 	uint32_t _character;

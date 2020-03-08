@@ -32,7 +32,7 @@ public:
 	inline FriendManager* Friends() { return _friendManager; }
 	inline std::shared_ptr<Lobby> GetLobby() { return _lobby; };
 
-	void Whisper(std::string message);
+	void Whisper(std::u16string message);
 
 	uint32_t userId = NULL;
 	LobbyPacketHandler* handler;

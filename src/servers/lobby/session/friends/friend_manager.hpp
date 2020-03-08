@@ -26,9 +26,9 @@ public:
 
 	void Load(uint32_t playerId);
 	std::vector<Friend> List();
-	Friend ConstructFriend(uint32_t fromId, uint32_t friendPlayerId, std::string nickname, uint8_t level);
+	Friend ConstructFriend(uint32_t fromId, uint32_t friendPlayerId, std::u16string nickname, uint8_t level);
 	bool HasFriend(uint32_t playerId);
-	bool HasFriend(std::string username);
+	bool HasFriend(std::u16string username);
 	bool AddFriend(Friend friendToAdd, State state);
 	Friend AcceptFriend(uint32_t friendId);
 	bool RemoveFriend(uint32_t targetId);

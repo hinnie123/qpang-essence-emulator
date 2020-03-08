@@ -13,19 +13,24 @@
 class WhisperReceivedEvent : public LobbyPacketEvent {
 
 public:
-	WhisperReceivedEvent(std::string nickname, std::string message) { _nickname = nickname; _message = message; }
+	WhisperReceivedEvent(std::u16string nickname, std::u16string message) { _nickname = nickname; _message = message; }
 
 	ServerPacket Compose(LobbySession* session) override 
 	{
-		Packets::Lobby::WhisperRsp rsp{};
-		wcsncpy(rsp.nickname, std::wstring(_nickname.begin(), _nickname.end()).data(), 16);
-		wcsncpy(rsp.message, std::wstring(_message.begin(), _message.end()).data(), 254);
-		return ServerPacket::Create<Opcode::LOBBY_WHISPER>(rsp);
+		auto packet = ServerPacket::Create<Opcode::LOBBY_WHISPER>();
+
+		packet.WriteInt(0); // unknown
+		packet.WriteShort(_message.size());
+
+		packet.WriteUtf16String(_nickname, 16);
+		packet.WriteUtf16String(_message, 254);
+
+		return packet;
 	};
 
 private:
-	std::string _nickname;
-	std::string _message;	
+	std::u16string _nickname;
+	std::u16string _message;	
 };
 
 #endif

@@ -23,8 +23,6 @@ public:
 		//Already logged in, let's disconnect the currenty logged in user.
 		if (player != nullptr)
 		{
-			sLogger->Get()->debug("LoginResponse Already Logged In");
-
 			player->HandleClose();
 			player->Disconnect();
 		}
@@ -41,7 +39,7 @@ public:
 		/* Player info */
 		packet.WriteInt(_userId);
 		packet.WriteEmpty(42);
-		packet.WriteUtf16String(StringConverter::Utf8ToUtf16(session->Info()->Nickname()), 16);
+		packet.WriteUtf16String(session->Info()->Nickname(), 16);
 		packet.WriteInt(100); // playtime
 		packet.WriteInt(session->Info()->Cash());
 		packet.WriteInt(session->Info()->Rank());

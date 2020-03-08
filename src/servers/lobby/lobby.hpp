@@ -33,18 +33,18 @@ public:
 	void AddSession(std::shared_ptr<LobbySession> session);
 	std::shared_ptr<LobbySession> FindSessionByUid(uint32_t userId);
 	std::shared_ptr<LobbySession> FindSession(uint32_t playerId);
-	std::shared_ptr<LobbySession> FindSession(std::string nickname);
+	std::shared_ptr<LobbySession> FindSession(std::u16string nickname);
 	std::shared_ptr<LobbySession> FindSession(std::array<uint8_t, 16> uuid);
 	void RemoveSession(uint32_t userId);
 
 	OfflinePlayer GetOfflinePlayer(uint32_t playerId, OfflinePlayer::Type queryType);
-	OfflinePlayer GetOfflinePlayer(std::string nickname, OfflinePlayer::Type queryType);
+	OfflinePlayer GetOfflinePlayer(std::u16string nickname, OfflinePlayer::Type queryType);
 
 	void RefreshGamerooms();
 
 	void SendPacket(ServerPacket pack);
 	void SendPacket(ServerPacket pack, uint32_t targetId);
-	void Notify(std::string message);
+	void Notify(std::u16string message);
 	bool IsOnline(uint32_t playerId);
 	uint32_t GetItemIdByCardId(uint32_t cardId);
 
@@ -59,7 +59,7 @@ public:
 	inline Leaderboard* Ranking() { return _leaderBoard; };
 	inline CraneManager* Crane() { return _craneManager; };
 	inline GameRoomManager* Rooms() { return _roomManager; };
-	bool ValidateNickname(std::string nickname);
+	bool ValidateNickname(std::u16string nickname);
 	inline std::vector<std::shared_ptr<LobbySession>> Sessions() { return _sessions; };
 
 private:

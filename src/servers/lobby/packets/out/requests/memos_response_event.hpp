@@ -34,8 +34,8 @@ public:
 			packet.WriteLong(message.id);
 			packet.WriteInt(message.senderId);
 			packet.WriteInt(message.received);
-			packet.WriteUtf16String(StringConverter::Utf8ToUtf16(message.senderName), 16);
-			packet.WriteUtf16String(StringConverter::Utf8ToUtf16(message.messageBody), 100);
+			packet.WriteUtf16String(message.senderName, 16);
+			packet.WriteUtf16String(message.messageBody, 100);
 			packet.WriteFlag(message.opened);
 		}
 

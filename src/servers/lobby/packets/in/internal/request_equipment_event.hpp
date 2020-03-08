@@ -40,7 +40,7 @@ public:
 			uint8_t rank = targetPlayer->Info()->Rank();
 			uint16_t character = targetPlayer->Info()->Character();
 			uint32_t prestige = targetPlayer->Info()->Prestige();
-			std::string nickname = targetPlayer->Info()->Nickname();
+			std::u16string nickname = targetPlayer->Info()->Nickname();
 			square->SendPacket(RequestEquipmentResponseEvent{ equipmentItems, playerId, true, level, rank, character, prestige, nickname }.Compose(session));
 		}
 		else

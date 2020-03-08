@@ -11,6 +11,8 @@ std::u16string ClientPacket::ReadUtf16String(uint32_t length)
 
 	std::u16string string = std::u16string(reinterpret_cast<char16_t*>(buffer.data() + this->bufferPosition), length);
 
+	string.erase(std::find(string.begin(), string.end(), u'\0'), string.end());
+
 	// 2 0 terminator at the end
 	this->bufferPosition += length * 2 + 2;
 

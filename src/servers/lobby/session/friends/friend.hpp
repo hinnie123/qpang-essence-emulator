@@ -7,7 +7,7 @@
 struct Friend {
 
 	Friend() {};
-	Friend(uint32_t id, uint32_t fromId, uint32_t toPlayerId, std::string nickname, uint8_t level, uint8_t state)
+	Friend(uint32_t id, uint32_t fromId, uint32_t toPlayerId, std::u16string nickname, uint8_t level, uint8_t state)
 	{
 		this->id = id;
 		this->fromId = fromId;
@@ -20,7 +20,7 @@ struct Friend {
 	uint32_t id;
 	uint32_t fromId;
 	uint32_t toPlayerId;
-	std::string nickname;
+	std::u16string nickname;
 	uint8_t level;
 	uint8_t state;
 };

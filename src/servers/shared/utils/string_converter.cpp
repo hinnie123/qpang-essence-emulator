@@ -40,3 +40,10 @@ std::string StringConverter::ToLowerCase(std::string string)
 	std::transform(someString.begin(), someString.end(), someString.begin(), ::tolower);
 	return someString;
 }
+
+std::u16string StringConverter::ToLowerCase(std::u16string string)
+{
+	std::u16string someString(string);
+	std::transform(someString.begin(), someString.end(), someString.begin(), ::tolower);
+	return someString;
+}

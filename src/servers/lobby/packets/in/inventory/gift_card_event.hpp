@@ -33,9 +33,7 @@ public:
 		uint64_t cardId = pack.ReadLong();
 		uint32_t unk01 = pack.ReadInt();
 
-		std::string targetNickname = StringConverter::Utf16ToUtf8(nickname);
-
-		if (targetNickname == session->Info()->Nickname())
+		if (nickname == session->Info()->Nickname())
 			return session->SendError<Opcode::LOBBY_GIFT_ITEM_FAIL>(Error::TARGET_NOT_EXIST);
 
 		InventoryCard cardToGift = session->Inventory()->GetItemByCardId(cardId);
@@ -43,12 +41,12 @@ public:
 		if (!cardToGift.giftable)
 			return session->SendError<Opcode::LOBBY_GIFT_ITEM_FAIL>(Error::CARD_UNGIFTABLE);
 
-		if (!session->GetLobby()->ValidateNickname(targetNickname))
+		if (!session->GetLobby()->ValidateNickname(nickname))
 			return session->SendError<Opcode::LOBBY_GIFT_ITEM_FAIL>(Error::TARGET_NOT_EXIST);
 
 		if (cardToGift.id == cardId)
 		{
-			auto target = session->GetLobby()->FindSession(targetNickname);
+			auto target = session->GetLobby()->FindSession(nickname);
 			if (target != nullptr)
 			{
 				//Target is online!
@@ -77,7 +75,7 @@ public:
 			}
 			else
 			{
-				OfflinePlayer offPlayer = session->GetLobby()->GetOfflinePlayer(targetNickname, OfflinePlayer::Type::MINIMAL);
+				OfflinePlayer offPlayer = session->GetLobby()->GetOfflinePlayer(nickname, OfflinePlayer::Type::MINIMAL);
 				ShopItem shopItem = session->GetLobby()->Shop()->GetItemByItemId(cardToGift.itemId);
 				if(offPlayer.level < shopItem.minLevel)
 					return session->SendError<Opcode::LOBBY_GIFT_ITEM_FAIL>(Error::CARD_TARGET_LEVEL_LOW);

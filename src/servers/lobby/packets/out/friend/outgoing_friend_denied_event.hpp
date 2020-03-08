@@ -12,20 +12,20 @@
 class OutgoingFriendDeniedEvent : public LobbyPacketEvent {
 
 public:
-	OutgoingFriendDeniedEvent(uint32_t playerId, std::string nickname) { _playerId = playerId; _nickname = nickname; };
+	OutgoingFriendDeniedEvent(uint32_t playerId, std::u16string nickname) { _playerId = playerId; _nickname = nickname; };
 
 	ServerPacket Compose(LobbySession* session) override {
 		auto packet = ServerPacket::Create<Opcode::LOBBY_OUTGOING_FRIEND_DENIED>();
 
 		packet.WriteInt(_playerId);
 		packet.WriteLong(0); // unknown
-		packet.WriteUtf16String(StringConverter::Utf8ToUtf16(_nickname), 16);
+		packet.WriteUtf16String(_nickname, 16);
 
 		return packet;
 	};
 private:
 	uint32_t _playerId;
-	std::string _nickname;
+	std::u16string _nickname;
 };
 
 #endif

@@ -14,7 +14,7 @@ public:
 	{
 		auto lobby = session->GetLobby();
 		lobby->Ranking()->Load();
-		lobby->Notify("Leaderboards are refreshed in-game, check your new rank!");
+		lobby->Notify(u"The leaderboard got updated");
 
 		std::vector<LobbySession::Ptr> sessions = lobby->Sessions();
 

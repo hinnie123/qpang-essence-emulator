@@ -33,7 +33,6 @@ bool SquareCommandHandler::TryExecute(SquareSession* session, std::string comman
 	{
 		try
 		{
-			sLogger->Get()->info("{0} is trying toe execute command {1}", session->Info()->Nickname(), command->Name());
 			command->Execute(session);
 		}
 		catch (const std::exception&)

@@ -8,7 +8,7 @@
 struct Message {
 	
 	Message() { this->id = NULL; };
-	Message(uint32_t id, uint32_t senderId, std::string senderName, std::string messageBody, uint32_t received, uint8_t opened)
+	Message(uint32_t id, uint32_t senderId, std::u16string senderName, std::u16string messageBody, uint32_t received, uint8_t opened)
 	{
 		this->id = id;
 		this->senderId = senderId;
@@ -20,8 +20,8 @@ struct Message {
 	
 	uint32_t id;
 	uint32_t senderId;
-	std::string senderName;
-	std::string messageBody;
+	std::u16string senderName;
+	std::u16string messageBody;
 	uint32_t received;
 	uint8_t opened;
 };

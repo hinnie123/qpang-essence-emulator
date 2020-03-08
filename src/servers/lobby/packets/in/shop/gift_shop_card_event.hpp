@@ -34,13 +34,12 @@ public:
 		uint32_t sequenceId = pack.ReadInt();
 		pack.Skip(18);
 
-		std::string targetNickname = StringConverter::Utf16ToUtf8(nickname);
 		ShopItem itemToBuy = session->GetLobby()->Shop()->GetItemBySequenceId(sequenceId);
 
-		if (targetNickname == session->Info()->Nickname())
+		if (nickname == session->Info()->Nickname())
 			return session->SendError<Opcode::LOBBY_GIFT_ITEM_FAIL>(Error::TARGET_NOT_EXIST);
 
-		if (!session->GetLobby()->ValidateNickname(targetNickname))
+		if (!session->GetLobby()->ValidateNickname(nickname))
 			return session->SendError<Opcode::LOBBY_GIFT_ITEM_FAIL>(Error::TARGET_NOT_EXIST);
 
 		if (itemToBuy.soldCount >= itemToBuy.stock)
@@ -62,7 +61,7 @@ public:
 					don = session->Info()->Don(don - itemToBuy.price);
 
 
-				auto target = session->GetLobby()->FindSession(targetNickname);
+				auto target = session->GetLobby()->FindSession(nickname);
 				if (target != nullptr)
 				{
 					// Send gift..
@@ -76,7 +75,7 @@ public:
 				}
 				else
 				{
-					OfflinePlayer offlinePlayer = session->GetLobby()->GetOfflinePlayer(targetNickname, OfflinePlayer::Type::MINIMAL);
+					OfflinePlayer offlinePlayer = session->GetLobby()->GetOfflinePlayer(nickname, OfflinePlayer::Type::MINIMAL);
 					InventoryCard invCard = session->Inventory()->AddItem(session->GetLobby()->Shop()->Buy(itemToBuy, session->Info()->Id()));
 
 					bool success = false;

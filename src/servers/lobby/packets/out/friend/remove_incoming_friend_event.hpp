@@ -10,7 +10,7 @@
 class RemoveIncomingFriendEvent : public LobbyPacketEvent {
 
 public:
-	RemoveIncomingFriendEvent(uint32_t targetId, std::string nickname) { _targetId = targetId; _nickname = nickname; };
+	RemoveIncomingFriendEvent(uint32_t targetId, std::u16string nickname) { _targetId = targetId; _nickname = nickname; };
 
 	ServerPacket Compose(LobbySession* session) override {
 
@@ -18,13 +18,13 @@ public:
 	
 		packet.WriteInt(_targetId);
 		packet.WriteLong(0); // unknown
-		packet.WriteUtf16String(StringConverter::Utf8ToUtf16(_nickname), 16);
+		packet.WriteUtf16String(_nickname, 16);
 
 		return packet;
 	};
 private:
 	uint32_t _targetId;
-	std::string _nickname;
+	std::u16string _nickname;
 };
 
 #endif

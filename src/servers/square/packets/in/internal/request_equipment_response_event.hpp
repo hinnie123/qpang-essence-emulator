@@ -18,27 +18,33 @@ class RequestEquipmentResponseEvent : public SquarePacketEvent {
 public:
 	void Read(SquareSession* session, ClientPacket& pack) override
 	{
-		auto packet = pack.Read<Packets::Internal::RequestEquipmentRsp>();
-		if (packet.status)
+		uint32_t playerId = pack.ReadInt();
+		uint8_t rank = pack.ReadByte();
+		uint16_t level = pack.ReadShort();
+		uint16_t character = pack.ReadShort();
+		uint32_t prestige = pack.ReadInt();
+		uint8_t success = pack.ReadFlag();
+		std::u16string nickname = pack.ReadUtf16String(16);
+		std::array<uint32_t, 9> equipment = pack.ReadArray<uint32_t, 9>();
+
+		if (success)
 		{
-			auto targetSession = session->GetSquareManager()->FindSession(packet.playerId);
+			auto targetSession = session->GetSquareManager()->FindSession(playerId);
 			std::vector<Square::Ptr> squares = session->GetSquareManager()->List();
+
 			if (targetSession != nullptr)
 			{
-				targetSession->Info()->SetId(packet.playerId);
-				targetSession->Info()->SetCharacter(packet.character);
-				targetSession->Info()->SetEquipment(packet.equipment);
-				targetSession->Info()->SetRank(packet.rank);
-				targetSession->Info()->SetLevel(packet.level);
-				targetSession->Info()->SetPrestige(packet.prestige);
-				targetSession->Info()->SetNickname(StringConverter::WcharToString(packet.nickname, 16));
+				targetSession->Info()->SetId(playerId);
+				targetSession->Info()->SetCharacter(character);
+				targetSession->Info()->SetEquipment(equipment);
+				targetSession->Info()->SetRank(rank);
+				targetSession->Info()->SetLevel(level);
+				targetSession->Info()->SetPrestige(prestige);
+				targetSession->Info()->SetNickname(nickname);
 
-				sLogger->Get()->debug("Sending Login Event to {0} ", targetSession->Info()->Nickname());
 				targetSession->Send(LoginResponseEvent{ squares }.Compose(targetSession.get()));
 			}
 		}
-		else
-			sLogger->Get()->debug("{0:d} failed to login, status: {1:d}", packet.playerId, packet.status);
 	}
 };
 

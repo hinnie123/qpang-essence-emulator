@@ -14,7 +14,7 @@
 class MessengerManager {
 public:
 	void Load(uint32_t playerId);
-	Message ReceiveMemo(uint32_t fromId, uint32_t targetId, std::string nickname, std::string message);
+	Message ReceiveMemo(uint32_t fromId, uint32_t targetId, std::u16string nickname, std::u16string message);
 	void AddMemo(Message message);
 	void OpenMemo(uint32_t memoId);
 	bool RemoveMemo(uint32_t memoId);

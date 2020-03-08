@@ -37,8 +37,6 @@ void ShopManager::Load()
 			result->next();
 		} while (result->hasNext());
 	}
-	else
-		sLogger->Get()->error("No item definitions were found in the database");
 }
 
 std::vector<ShopItem> ShopManager::List()

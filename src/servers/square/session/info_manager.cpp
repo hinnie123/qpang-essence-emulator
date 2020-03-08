@@ -27,7 +27,7 @@ void InfoManager::SetPrestige(uint32_t prestige)
 {
 	_prestige = prestige;
 }
-void InfoManager::SetNickname(std::string nickname)
+void InfoManager::SetNickname(std::u16string nickname)
 {
 	_nickname = nickname;
 }
@@ -58,7 +58,7 @@ uint8_t InfoManager::Rank()
 	return _rank;
 }
 
-std::string InfoManager::Nickname()
+std::u16string InfoManager::Nickname()
 {
 	return _nickname;
 }

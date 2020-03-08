@@ -10,7 +10,7 @@
 class RequestEquipmentResponseEvent : public LobbyPacketEvent {
 
 public:
-	RequestEquipmentResponseEvent(std::array<uint32_t, 9> items, uint32_t playerId, uint8_t status, uint16_t level, uint8_t rank, uint16_t character, uint32_t prestige, std::string nickname)
+	RequestEquipmentResponseEvent(std::array<uint32_t, 9> items, uint32_t playerId, uint8_t status, uint16_t level, uint8_t rank, uint16_t character, uint32_t prestige, std::u16string nickname)
 	{
 		_items = items;
 		_playerId = playerId;
@@ -26,22 +26,22 @@ public:
 
 	ServerPacket Compose(LobbySession* session) override
 	{
-		Packets::Internal::RequestEquipmentRsp rsp{};
+		auto packet = ServerPacket::Create<Opcode::REQUEST_EQUIPMENT_RSP>();
 
-		rsp.equipment = _items;
-		rsp.playerId = _playerId;
-		rsp.status = _status;
-		rsp.level = _level;
-		rsp.rank = _rank;
-		rsp.character = _character;
-		rsp.prestige = _prestige;
-		wcsncpy(rsp.nickname, std::wstring(_nickname.begin(), _nickname.end()).data(), 16);
+		packet.WriteInt(_playerId);
+		packet.WriteByte(_rank);
+		packet.WriteShort(_level);
+		packet.WriteShort(_character);
+		packet.WriteInt(_prestige);
+		packet.WriteFlag(_status);
+		packet.WriteUtf16String(_nickname, 16);
+		packet.WriteArray<uint32_t, 9>(_items);
 
-		return ServerPacket::Create<Opcode::REQUEST_EQUIPMENT_RSP>(rsp);
+		return packet;
 	}
 private:
 	std::array<uint32_t, 9> _items;
-	std::string _nickname;
+	std::u16string _nickname;
 	uint32_t _playerId;
 	uint8_t _status;
 	uint16_t _level;

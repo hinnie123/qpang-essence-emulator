@@ -132,6 +132,8 @@ retry:
 
 std::string Database::escapeString(const std::string& s) const
 {
+	// TODO: Add support for u16string
+
 	return escapeBlob(s.c_str(), s.length());
 }
 

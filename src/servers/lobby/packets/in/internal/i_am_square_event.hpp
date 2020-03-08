@@ -12,7 +12,6 @@ public:
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
 		session->GetConnection()->SetEncryption(false);
-		sLogger->Get()->info("Disable encryption for squareserver");
 	}
 };
 

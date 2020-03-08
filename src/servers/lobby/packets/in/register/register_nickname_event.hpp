@@ -18,7 +18,7 @@ public:
 		if (nickname.size() < 4 || nickname.size() > 16)
 			return session->SendError<Opcode::LOBBY_SERVER_ERROR>(827);
 
-		if (session->GetLobby()->ValidateNickname(StringConverter::Utf16ToUtf8(nickname))) // nickname already exists
+		if (session->GetLobby()->ValidateNickname(nickname))
 			return session->SendError<Opcode::LOBBY_SERVER_ERROR>(820);
 
 		session->Send(RegisterNicknameResponseEvent{ StringConverter::Utf16ToUtf8(nickname) }.Compose(session));

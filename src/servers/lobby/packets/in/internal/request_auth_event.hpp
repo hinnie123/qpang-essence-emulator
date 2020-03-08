@@ -32,7 +32,7 @@ public:
 		if (target != nullptr)
 		{
 			uint32_t playerId = target->Info()->Id();
-			std::string nickname = target->Info()->Nickname();
+			std::u16string nickname = target->Info()->Nickname();
 			uint32_t experience = target->Info()->Experience();
 			uint32_t prestige = target->Info()->Prestige();
 			uint8_t rank = target->Info()->Rank();

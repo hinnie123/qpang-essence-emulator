@@ -24,7 +24,7 @@ public:
 		if (!session->Equipment()->ValidateCharacter(firstCharacter) || !session->Equipment()->ValidateCharacter(secondCharacter))
 			return;
 
-		if (session->GetLobby()->ValidateNickname(StringConverter::Utf16ToUtf8(nickname)))
+		if (session->GetLobby()->ValidateNickname(nickname))
 			return session->SendError<Opcode::LOBBY_SERVER_ERROR>(820);
 
 		std::string query = str(boost::format("INSERT INTO players (user_id, name) VALUES (%1%, %2%)") % std::to_string(session->userId) % sDatabase->escapeString(StringConverter::Utf16ToUtf8(nickname)));
@@ -43,7 +43,7 @@ public:
 
 		sDatabase->executeQuery(query.substr(0, query.size() - 1)); // getting rid of ','
 
-		session->Info()->Nickname(StringConverter::Utf16ToUtf8(nickname));
+		session->Info()->Nickname(nickname);
 		session->Send(RegisterCharactersResponseEvent{ StringConverter::Utf16ToUtf8(nickname), firstCharacter, secondCharacter }.Compose(session));
 	};
 };

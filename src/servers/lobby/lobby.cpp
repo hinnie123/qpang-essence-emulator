@@ -36,16 +36,16 @@ OfflinePlayer Lobby::GetOfflinePlayer(uint32_t playerId, OfflinePlayer::Type typ
 	return ConstructOfflinePlayer(str(boost::format(query) % playerId), type);
 }
 
-OfflinePlayer Lobby::GetOfflinePlayer(std::string nickname, OfflinePlayer::Type type)
+OfflinePlayer Lobby::GetOfflinePlayer(std::u16string nickname, OfflinePlayer::Type type)
 {
-	nickname = sDatabase->escapeString(nickname);
+	std::string escNickname = sDatabase->escapeString(StringConverter::Utf16ToUtf8(nickname));
 	std::string query = "SELECT * FROM players WHERE players.name = %1%";
-	return ConstructOfflinePlayer(str(boost::format(query) % nickname), type);
+	return ConstructOfflinePlayer(str(boost::format(query) % escNickname), type);
 }
 
 void Lobby::RefreshGamerooms()
 {
-	sLogger->Get()->info("Refreshing gamerooms");
+
 }
 
 LobbySession::Ptr Lobby::FindSession(std::array<uint8_t, 16> uuid)
@@ -59,7 +59,6 @@ LobbySession::Ptr Lobby::FindSession(std::array<uint8_t, 16> uuid)
 
 void Lobby::AddSession(std::shared_ptr<LobbySession> session)
 {
-	sLogger->Get()->debug("Adding new session");
 	session->StartNetworking();
 	_sessions.push_back(session);
 }
@@ -88,15 +87,20 @@ LobbySession::Ptr Lobby::FindSession(uint32_t playerId)
 	return nullptr;
 }
 
-LobbySession::Ptr Lobby::FindSession(std::string nickname)
+LobbySession::Ptr Lobby::FindSession(std::u16string nickname)
 {
-	if (nickname == std::string())
+	if (nickname == std::u16string())
 		return nullptr;
 
-	nickname = StringConverter::ToLowerCase(nickname);
+	std::u16string targetNickname = StringConverter::ToLowerCase(nickname);
+
 	for (auto session : _sessions)
-		if (StringConverter::ToLowerCase(session->Info()->Nickname()) == nickname)
+	{
+		std::u16string possibleNickname = StringConverter::ToLowerCase(session->Info()->Nickname());
+
+		if (possibleNickname == targetNickname)
 			return session;
+	}
 
 	return nullptr;
 }
@@ -114,7 +118,7 @@ void Lobby::SendPacket(ServerPacket pack, uint32_t targetId)
 			return session->Send(pack);
 }
 
-void Lobby::Notify(std::string message)
+void Lobby::Notify(std::u16string message)
 {
 	for (auto session : _sessions)
 		session->Whisper(message);
@@ -146,11 +150,10 @@ void Lobby::SetRoomServer(std::shared_ptr<Connection> conn)
 	_roomServer = conn;
 }
 
-bool Lobby::ValidateNickname(std::string nickname)
+bool Lobby::ValidateNickname(std::u16string nickname)
 {
 	if (nickname.size() < 4 || nickname.size() > 16)
 	{
-		sLogger->Get()->info("the nickname {0} is invalid", nickname);
 		return false;
 	}
 
@@ -159,7 +162,7 @@ bool Lobby::ValidateNickname(std::string nickname)
 		if (StringConverter::ToLowerCase(session->Info()->Nickname()) == nickname)
 			return true;
 
-	std::string escapedNick = sDatabase->escapeString(nickname);
+	std::string escapedNick = sDatabase->escapeString(StringConverter::Utf16ToUtf8(nickname));
 	std::string query(str(boost::format("SELECT name FROM players WHERE name = %1%") % escapedNick));
 	auto result = sDatabase->storeQuery(query);
 	return result != nullptr ? true : false;
@@ -172,7 +175,7 @@ OfflinePlayer Lobby::ConstructOfflinePlayer(std::string query, OfflinePlayer::Ty
 	{
 		uint16_t character = databaseResult->getNumber<uint32_t>("default_character");
 		uint32_t playerId = databaseResult->getNumber<uint32_t>("id");
-		std::string nickname = databaseResult->getString("name");
+		std::u16string nickname = StringConverter::Utf8ToUtf16(databaseResult->getString("name"));
 		uint8_t rank = databaseResult->getNumber<uint32_t>("rank");
 		uint8_t level = databaseResult->getNumber<uint32_t>("level");
 		uint32_t experience = databaseResult->getNumber<uint32_t>("experience");

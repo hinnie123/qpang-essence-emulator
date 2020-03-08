@@ -16,7 +16,7 @@ public:
 	{
 		auto lobby = session->GetLobby();
 		lobby->Crane()->Load();
-		lobby->Notify("There are new items in the crane, check them out!");
+		lobby->Notify(u"The shop got updated");
 	}
 private:
 };

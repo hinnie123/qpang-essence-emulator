@@ -31,14 +31,12 @@ void LobbySession::SetLobby(std::shared_ptr<Lobby> lobby)
 
 void LobbySession::Save()
 {
-	sLogger->Get()->info("Saving account details for: {0}", Info()->Nickname());
-	//Use this function to save user info in the database. Gets called when user disconnects / server shutdown.
 	Equipment()->Save(Info()->Id());
 }
 
-void LobbySession::Whisper(std::string message)
+void LobbySession::Whisper(std::u16string message)
 {
-	Send(WhisperReceivedEvent{ "(!)", message }.Compose(nullptr));
+	Send(WhisperReceivedEvent{ u"(!)", message }.Compose(nullptr));
 }
 
 void LobbySession::HandleClose()
@@ -48,8 +46,6 @@ void LobbySession::HandleClose()
 
 LobbySession::~LobbySession()
 {
-	sLogger->Get()->debug("Destroy LobbySession {0:d}", Info()->Id());
-
 	delete _infoManager;
 	delete _equipmentManager;
 	delete _inventoryManager;

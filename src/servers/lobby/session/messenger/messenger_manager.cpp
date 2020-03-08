@@ -1,4 +1,6 @@
 #include "messenger_manager.hpp"
+#include "string_converter.hpp"
+
 
 void MessengerManager::Load(uint32_t playerId)
 {
@@ -11,8 +13,8 @@ void MessengerManager::Load(uint32_t playerId)
 		{
 			uint32_t id = result->getNumber<uint32_t>("id");
 			uint32_t senderId = result->getNumber<uint32_t>("sender_id");
-			std::string senderName = result->getString("name");
-			std::string message = result->getString("message");
+			std::u16string senderName = StringConverter::Utf8ToUtf16(result->getString("name"));
+			std::u16string message = StringConverter::Utf8ToUtf16(result->getString("message"));
 			uint32_t created = result->getNumber<uint32_t>("created");
 			uint8_t opened = result->getNumber<uint32_t>("opened");
 
@@ -22,13 +24,12 @@ void MessengerManager::Load(uint32_t playerId)
 	}
 }
 
-Message MessengerManager::ReceiveMemo(uint32_t fromId, uint32_t targetId, std::string nickname , std::string message)
+Message MessengerManager::ReceiveMemo(uint32_t fromId, uint32_t targetId, std::u16string nickname , std::u16string message)
 {
-	sLogger->Get()->debug("Memo received from: {0:d} to: {1:d}. {2}: {3}", fromId, targetId, nickname, message);
-	message = sDatabase->escapeString(message);
+	std::string escMessage = sDatabase->escapeString(StringConverter::Utf16ToUtf8(message));
 
 	std::string query = str(boost::format("INSERT INTO memos (sender_id, receiver_id, message, created, opened) VALUES (%1%, %2%, %3%, %4%, %5%)")
-	% fromId % targetId % message % time(NULL) % 0 );
+	% fromId % targetId % escMessage % time(NULL) % 0 );
 	bool result = sDatabase->executeQuery(query);
 	if (result)
 	{
@@ -48,7 +49,6 @@ void MessengerManager::AddMemo(Message message)
 
 void MessengerManager::OpenMemo(uint32_t memoId)
 {
-	sLogger->Get()->debug("Opening memo: {0:d}", memoId);
 	for (auto it = _messages.begin(); it != _messages.end(); it++)
 	{
 		if (it->id == memoId)

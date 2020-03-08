@@ -12,7 +12,7 @@ void FriendManager::Load(uint32_t playerId)
 			uint32_t id = result->getNumber<uint32_t>("id");
 			uint32_t fromPlayerId = result->getNumber<uint32_t>("player_from");
 			uint32_t toPlayerId = result->getNumber<uint32_t>("player_to");
-			std::string fromPlayerNickname = result->getString("name");
+			std::u16string fromPlayerNickname = StringConverter::Utf8ToUtf16(result->getString("name"));
 			uint8_t level = result->getNumber<uint32_t>("level");
 			uint8_t friendshipState = result->getNumber<uint32_t>("status");
 
@@ -27,7 +27,7 @@ std::vector<Friend> FriendManager::List()
 	return _friends;
 }
 
-Friend FriendManager::ConstructFriend(uint32_t fromId, uint32_t friendPlayerId, std::string nickname, uint8_t level)
+Friend FriendManager::ConstructFriend(uint32_t fromId, uint32_t friendPlayerId, std::u16string nickname, uint8_t level)
 {
 	return Friend{ 0, fromId, friendPlayerId, nickname, level, 0 };
 }
@@ -41,7 +41,7 @@ bool FriendManager::HasFriend(uint32_t playerId)
 	return false;
 }
 
-bool FriendManager::HasFriend(std::string username)
+bool FriendManager::HasFriend(std::u16string username)
 {
 	for (Friend theFriend : _friends)
 		if (StringConverter::ToLowerCase(theFriend.nickname) == StringConverter::ToLowerCase(username))

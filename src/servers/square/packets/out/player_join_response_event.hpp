@@ -28,7 +28,7 @@ public:
 		{
 			packet.WriteInt(target->Info()->State());
 			packet.WriteInt(target->Info()->Id());
-			packet.WriteUtf16String(StringConverter::Utf8ToUtf16(target->Info()->Nickname()), 16);
+			packet.WriteUtf16String(target->Info()->Nickname(), 16);
 			packet.WriteByte(target->Info()->Level());
 			packet.WriteByte(target->Info()->Rank());
 			packet.WriteShort(target->Info()->Prestige());

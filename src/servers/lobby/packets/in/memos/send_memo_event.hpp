@@ -23,14 +23,15 @@ public:
 	SendMemoEvent() : LobbyPacketEvent(sizeof(Packets::Lobby::SendMemo)) {};
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
-		auto packet = pack.Read<Packets::Lobby::SendMemo>();
-		std::string targetNickname = StringConverter::WcharToString(packet.target, 16);
-		std::string message = StringConverter::WcharToString(packet.message, 100);
+		uint32_t playerId = pack.ReadInt();
+		std::u16string nickname = pack.ReadUtf16String(16);
+		std::u16string message = pack.ReadUtf16String(100);
+		uint32_t unknown01 = pack.ReadInt();
 		
-		if (!session->GetLobby()->ValidateNickname(targetNickname))
+		if (!session->GetLobby()->ValidateNickname(nickname))
 			return session->SendError<Opcode::LOBBY_SEND_MEMO_FAIL>(Error::TARGET_CANNOT_RECEIVE_MEMO);
 
-		auto target = session->GetLobby()->FindSession(targetNickname);
+		auto target = session->GetLobby()->FindSession(nickname);
 
 		if (target != nullptr)
 		{

@@ -32,7 +32,7 @@ public:
 			packet.WriteByte(f.state);
 			packet.WriteFlag(false); // is online
 			packet.WriteShort(f.level);
-			packet.WriteUtf16String(StringConverter::Utf8ToUtf16(f.nickname), 16);
+			packet.WriteUtf16String(f.nickname, 16);
 		}
 
 		return packet;

@@ -34,10 +34,7 @@ public:
 		std::u16string nickname = pack.ReadUtf16String(16);
 		uint32_t unk01 = pack.ReadInt();
 
-		//TODO: Cleanup this shit code
-		std::string targetNickname = StringConverter::Utf16ToUtf8(nickname);
-
-		bool validName = session->GetLobby()->ValidateNickname(targetNickname);
+		bool validName = session->GetLobby()->ValidateNickname(nickname);
 
 		if(session->Friends()->List().size() >= MAX_FRIENDS)
 			return session->SendError<Opcode::LOBBY_FRIEND_INVITE_FAIL>(Error::NOMORE_BUDDY_PENDINGS);
@@ -45,14 +42,14 @@ public:
 		if (!validName)
 			return session->SendError<Opcode::LOBBY_FRIEND_INVITE_FAIL>(Error::ADD_FAIL_CANNOTFIND_USER);
 
-		auto target = session->GetLobby()->FindSession(targetNickname);
+		auto target = session->GetLobby()->FindSession(nickname);
 
 		if (target != nullptr)
 		{
 			if(target->Friends()->List().size() >= MAX_FRIENDS)
 				return session->SendError<Opcode::LOBBY_FRIEND_INVITE_FAIL>(Error::NOMORE_BUDDY_PENDINGS);
 
-			if (session->Friends()->HasFriend(targetNickname) || target->Friends()->HasFriend(session->Info()->Nickname()))
+			if (session->Friends()->HasFriend(nickname) || target->Friends()->HasFriend(session->Info()->Nickname()))
 				return session->SendError<Opcode::LOBBY_FRIEND_INVITE_FAIL>(Error::ALREADY_BUDDY_REGISTERD);
 
 			Friend targetFriend = session->Friends()->ConstructFriend(session->Info()->Id(), target->Info()->Id(), target->Info()->Nickname(), target->Info()->Level());
@@ -69,10 +66,10 @@ public:
 		}
 		else
 		{
-			if (session->Friends()->HasFriend(targetNickname))
+			if (session->Friends()->HasFriend(nickname))
 				return session->SendError<Opcode::LOBBY_FRIEND_INVITE_FAIL>(Error::ADD_FAIL_PEER_NOT_ALLOW);
 
-			OfflinePlayer offlinePlayer = session->GetLobby()->GetOfflinePlayer(targetNickname, OfflinePlayer::Type::MINIMAL);
+			OfflinePlayer offlinePlayer = session->GetLobby()->GetOfflinePlayer(nickname, OfflinePlayer::Type::MINIMAL);
 			Friend friendToAdd = session->Friends()->ConstructFriend(session->Info()->Id(), offlinePlayer.playerId, offlinePlayer.nickname, offlinePlayer.level);
 
 			auto queryResult = sDatabase->storeQuery(str(boost::format("SELECT count(*) as count FROM friends WHERE player_to = %1%") % offlinePlayer.playerId));

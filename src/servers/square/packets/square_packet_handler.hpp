@@ -60,7 +60,6 @@ public:
 			{
 				try
 				{
-					sLogger->Get()->debug("{0} Packet {1:d}", session->Info()->Nickname(), static_cast<uint16_t>(header.opcode));
 					return theEvent->second->Read(session, pack);
 				}
 				catch(std::exception& e)

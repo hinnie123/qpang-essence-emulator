@@ -32,8 +32,6 @@ bool Square::AddPlayer(std::shared_ptr<SquareSession> session)
 	if (foundPlayer != nullptr)
 		return false;
 
-	sLogger->Get()->debug("Adding {0} to square {1:d}", session->Info()->Nickname(), Id());
-
 	_sessions.push_back(session);
 	session->SetSquare(weak_from_this());
 	session->GetSquareManager()->Broadcast(UpdateListEvent{ shared_from_this(), UpdateListEvent::UPDATE }.Compose(nullptr));
@@ -46,7 +44,6 @@ void Square::RemovePlayer(uint32_t playerId)
 	{
 		if ((*it)->Info()->Id() == playerId)
 		{
-			sLogger->Get()->debug("Removed {0} from square {1:d}", (*it)->Info()->Nickname(), Id());
 			auto squareManager = (*it)->GetSquareManager();
 			_sessions.erase(it);
 

@@ -14,22 +14,29 @@ public:
 
 	void SetId(uint32_t id);
 	uint32_t Id();
+
 	void SetRank(uint8_t rank);
 	uint8_t Rank();
+
 	void SetLevel(uint32_t level);
 	uint32_t Level();
+
 	void SetPrestige(uint32_t prestige);
 	uint32_t Prestige();
+
 	void SetCharacter(uint16_t character);
 	uint16_t Character();
-	void SetNickname(std::string name);
-	std::string Nickname();
+
+	void SetNickname(std::u16string name);
+	std::u16string Nickname();
+
 	void SetPosition(std::array<float, 3> position);
 	std::array<float, 3> Position();
+
 	void SetState(uint32_t state);
 	uint32_t State();
 private:
-	std::string _nickname;
+	std::u16string _nickname;
 	uint32_t _playerId;
 	uint8_t _rank;
 	uint32_t _level;

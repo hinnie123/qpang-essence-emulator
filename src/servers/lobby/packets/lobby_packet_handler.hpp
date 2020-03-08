@@ -69,7 +69,6 @@ class LobbyPacketHandler : public PacketHandler {
 public:
 	LobbyPacketHandler()
 	{
-		sLogger->Get()->info("Loading lobby events");
 		_events[Opcode::KEY_EXCHANGE] = new HandshakeEvent();
 		_events[Opcode::LOBBY_LOGIN] = new LobbyLoginEvent();
 		_events[Opcode::LOBBY_NOTIFY_RSP] = new LobbyNotifyResponseEvent();
@@ -119,7 +118,6 @@ public:
 		_events[Opcode::LOBBY_RANDOM_INVITE] = new RoomRandomInviteEvent();
 		_events[Opcode::LOBBY_ROOM_REQUEST_STATS] = new UpdateStatsEvent();
 		_events[Opcode::ROOM_REQUEST_PLAYER_EQUIPMENT] = new RequestPlayerEquipmentEvent();
-		sLogger->Get()->info("{0:d} events were loaded", _events.size());
 	};
 
 	void Execute(LobbySession* session, ClientPacket& pack)
@@ -142,7 +140,7 @@ public:
 				}
 				catch (std::exception & e)
 				{
-					sLogger->Get()->error("{0:d} - [{1}:{2:d}]: {3}", header.opcode, session->Info()->Nickname(), session->Info()->Id(), e.what());
+					sLogger->Get()->error("{0:d} - [{1}:{2:d}]: {3}", header.opcode, StringConverter::Utf16ToUtf8(session->Info()->Nickname()), session->Info()->Id(), e.what());
 				}
 		}
 

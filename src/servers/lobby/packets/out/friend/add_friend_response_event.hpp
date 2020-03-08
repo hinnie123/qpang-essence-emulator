@@ -24,7 +24,7 @@ public:
 		packet.WriteByte(_friend.state);
 		packet.WriteFlag(_isOnline);
 		packet.WriteShort(_friend.level);
-		packet.WriteUtf16String(StringConverter::Utf8ToUtf16(_friend.nickname), 16);
+		packet.WriteUtf16String(_friend.nickname, 16);
 
 		return packet;
 	};

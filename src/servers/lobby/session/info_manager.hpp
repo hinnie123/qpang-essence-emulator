@@ -21,8 +21,8 @@ public:
 
 	inline uint32_t Id() { return _playerId; };
 
-	inline std::string Nickname() { return _nickname; };
-	std::string Nickname(std::string nickname);
+	inline std::u16string Nickname() { return _nickname; };
+	std::u16string Nickname(std::u16string nickname);
 
 	inline uint16_t Level() { return _level; };
 	uint16_t Level(uint16_t level);
@@ -58,9 +58,9 @@ private:
 
 	void ExecuteQuery(std::string query);
 
-	std::array<uint8_t, 16> _uuid;
-	uint32_t _playerId;
-	std::string _nickname = std::string();
+	std::array<uint8_t, 16> _uuid = {};
+	uint32_t _playerId = 0;
+	std::u16string _nickname = std::u16string();
 	uint16_t _level = 1;
 	uint32_t _experience = 0;
 	uint8_t _rank = 1;

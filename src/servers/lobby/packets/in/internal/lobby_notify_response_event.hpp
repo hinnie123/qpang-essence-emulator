@@ -19,8 +19,6 @@ public:
 		if (gameSession == nullptr)
 			return;
 
-		sLogger->Get()->debug("Lobby Notify RSP: valid: {0:d}", notifyResponse.valid);
-
 		if (!notifyResponse.valid)
 		{
 			gameSession->SendError<Opcode::LOBBY_SERVER_ERROR>(803);

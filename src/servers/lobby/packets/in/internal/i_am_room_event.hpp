@@ -14,7 +14,6 @@ public:
 	void Read(LobbySession* session, ClientPacket& pack) override
 	{
 		session->GetConnection()->SetEncryption(false);
-		sLogger->Get()->info("Disabled encryption for roomserver");
 	}
 private:
 };

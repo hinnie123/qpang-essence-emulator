@@ -12,13 +12,13 @@
 class ReceiveGiftEvent : public LobbyPacketEvent {
 
 public:
-	ReceiveGiftEvent(InventoryCard card, std::string senderName) { _card = card; _senderName = senderName; };
+	ReceiveGiftEvent(InventoryCard card, std::u16string senderName) { _card = card; _senderName = senderName; };
 	
 	ServerPacket Compose(LobbySession* session) override {
 		
 		auto packet = ServerPacket::Create<Opcode::LOBBY_RECEIVE_GIFT>();
 
-		packet.WriteUtf16String(StringConverter::Utf8ToUtf16(_senderName), 16);
+		packet.WriteUtf16String(_senderName, 16);
 		packet.WriteInt(_card.id);
 		packet.WriteInt(0); // unknown
 		packet.WriteFlag(true); // unknown
@@ -28,7 +28,7 @@ public:
 	};
 private:
 	InventoryCard _card;
-	std::string _senderName;
+	std::u16string _senderName;
 };
 
 #endif

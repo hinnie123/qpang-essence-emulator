@@ -28,8 +28,6 @@ void ChannelManager::Load()
 			result->next();
 		} while (result->hasNext());
 	}
-	else
-		sLogger->Get()->error("There are no channel definitions in the database");
 }
 
 Channel* ChannelManager::GetChannel(uint32_t channelIndex)

@@ -1,5 +1,7 @@
 #include "info_manager.hpp"
 
+#include "string_converter.hpp"
+
 InfoManager::InfoManager()
 {
 }
@@ -15,10 +17,8 @@ void InfoManager::Load(uint32_t userId)
 	auto result = sDatabase->storeQuery(str(boost::format("SELECT * FROM players WHERE user_id = %1%") % std::to_string(userId)).c_str());
 	if (result != nullptr)
 	{
-		sLogger->Get()->debug("Found info.. setting");
-
 		_playerId = result->getNumber<uint32_t>("id");
-		_nickname = result->getString("name");
+		_nickname = StringConverter::Utf8ToUtf16(result->getString("name"));
 		_rank = result->getNumber<uint32_t>("rank");
 		_character = result->getNumber<uint32_t>("default_character");
 		_level = result->getNumber<uint32_t>("level");
@@ -37,15 +37,14 @@ std::array<uint8_t, 16> InfoManager::Uuid(std::array<uint8_t, 16> uuid)
 	return _uuid = uuid;
 }
 
-std::string InfoManager::Nickname(std::string nickname)
+std::u16string InfoManager::Nickname(std::u16string nickname)
 {
-	sDatabase->executeQuery(str(boost::format("UPDATE players SET name = %1% WHERE id = %2%") % sDatabase->escapeString(nickname) % Id()));
+	sDatabase->executeQuery(str(boost::format("UPDATE players SET name = %1% WHERE id = %2%") % sDatabase->escapeString(StringConverter::Utf16ToUtf8(nickname)) % Id()));
 	return _nickname = nickname;
 }
 
 uint16_t InfoManager::Level(uint16_t level)
 {
-	sLogger->Get()->info("Player {0} set his/her level to: {1:d}", _nickname, level);
 	ExecuteQuery(str(boost::format("UPDATE players SET level = %1% WHERE id = %2%") % level % Id()));
 	return _level = level;
 }

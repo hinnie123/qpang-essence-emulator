@@ -17,7 +17,7 @@ public:
 
 		packet.WriteInt(0); // ?
 		packet.WriteInt(session->Info()->Id());
-		packet.WriteUtf16String(StringConverter::Utf8ToUtf16(session->Info()->Nickname()), 16);
+		packet.WriteUtf16String(session->Info()->Nickname(), 16);
 		packet.WriteByte(session->Info()->Level());
 		packet.WriteByte(session->Info()->Rank());
 		packet.WriteEmpty(2);

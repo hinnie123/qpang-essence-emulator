@@ -28,7 +28,6 @@ public:
 
 		if (oldLevel != newLevel)
 		{
-			session->GetLobby()->Notify(str(boost::format("Player %1% leveled up to level %2%, congratulations!") % session->Info()->Nickname() % newLevel));
 			session->GetLobby()->GetSquare()->SendPacket(UpdateLevelEvent{ session->Info()->Id(), session->Info()->Level() }.Compose(session));
 		}
 	}
