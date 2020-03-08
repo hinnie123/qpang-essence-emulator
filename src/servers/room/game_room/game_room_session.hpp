@@ -78,6 +78,8 @@ public:
 	void End();
 	void Clear();
 
+	void AddScore(Team team, uint16_t amount = 1);
+
 	void ShowStart();
 
 	void InitPlayers();
@@ -147,6 +149,16 @@ private:
 	 * \brief
 	 */
 	uint32_t m_goal;
+
+	/**
+	 * \brief
+	 */
+	uint16_t m_blueScore;
+
+	/**
+	 * \brief
+	 */
+	uint16_t m_yellowScore;
 
 	/**
 	 * \brief

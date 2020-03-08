@@ -11,6 +11,7 @@
 #include "gc_card.hpp"
 #include "gc_weapon.hpp"
 #include "gc_hit.hpp"
+#include "gc_score.hpp"
 
 #include <memory>
 #include <algorithm>
@@ -20,7 +21,9 @@ GameRoomSession::GameRoomSession(GameMode* mode, uint8_t map, uint32_t goal, boo
 	m_map(map),
 	m_goal(goal),
 	m_isPoints(isPoints),
-	m_state(State::WAITING)
+	m_state(State::WAITING),
+	m_blueScore(0),
+	m_yellowScore(0)
 {
 }
 
@@ -66,6 +69,7 @@ void GameRoomSession::OnPlayerLoaded(Player::Ptr player)
 	}
 
 	m_mode->OnPlayerLoaded(shared_from_this(), player);
+	player->Send(new GCScore(shared_from_this(), true));
 
 	if (m_state == State::PLAYING)
 	{
@@ -149,6 +153,21 @@ void GameRoomSession::Clear()
 	std::lock_guard<std::recursive_mutex> lg(m_playerMx);
 
 	m_players.clear();
+}
+
+void GameRoomSession::AddScore(Team team, uint16_t amount)
+{
+	if (team == Team::BLUE)
+	{
+		m_blueScore += amount;
+		return;
+	}
+
+	if (team == Team::YELLOW)
+	{
+		m_yellowScore += amount;
+		return;
+	}
 }
 
 void GameRoomSession::Load()
@@ -288,13 +307,18 @@ void GameRoomSession::AddKillfeed(uint32_t killerIdentifier, uint32_t targetIden
 
 ScoreBoard GameRoomSession::GenerateScoreBoard()
 {
-	auto scoreBoard = ScoreBoard();
+	uint16_t scoreLeader = 0;
 
 	std::lock_guard<std::recursive_mutex> lg(m_playerMx);
 
+	std::vector<ScoreBoard::Player> scorePlayers;
+
 	for (auto player : m_players)
 	{
-		scoreBoard.AddPlayer(ScoreBoard::Player{
+		if (player->GetSession()->GetScore() > scoreLeader)
+			scoreLeader = player->GetSession()->GetScore();
+
+		scorePlayers.push_back(ScoreBoard::Player{
 			player->GetIdentifier(),
 			player->GetLevel(),
 			player->GetTeam(),
@@ -302,10 +326,10 @@ ScoreBoard GameRoomSession::GenerateScoreBoard()
 			player->GetSession()->GetKills(),
 			player->GetSession()->GetDeaths(),
 			player->GetSession()->GetScore()
-			});
+		});
 	}
 
-	return scoreBoard;
+	return ScoreBoard(m_blueScore, m_yellowScore, scoreLeader, scorePlayers);
 }
 
 void GameRoomSession::LoadForBoth(Player::Ptr player1, Player::Ptr player2)

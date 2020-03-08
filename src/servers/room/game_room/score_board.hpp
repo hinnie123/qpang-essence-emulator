@@ -25,8 +25,7 @@ public:
 	};
 
 
-	ScoreBoard() = default;
-	~ScoreBoard() = default;
+	ScoreBoard(uint16_t blueScore, uint16_t yellowScore, uint16_t scoreLeader, std::vector<ScoreBoard::Player> players);
 
 	uint16_t GetBlueScore();
 	uint16_t GetYellowscore();
@@ -37,6 +36,9 @@ public:
 
 private:
 	std::vector<ScoreBoard::Player> m_players;
+	uint16_t m_blueScore;
+	uint16_t m_yellowScore;
+	uint16_t m_scoreLeader;
 };
 
 #endif // !_SCORE_BOARD_HPP

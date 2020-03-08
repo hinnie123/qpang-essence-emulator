@@ -4,6 +4,7 @@
 void FreeForAll::OnPlayerKill(const std::shared_ptr<GameRoomSession>& roomSession, const Player::Ptr & killer, const Player::Ptr & target)
 {
 	killer->GetSession()->AddScore();
+	roomSession->AddScore(killer->GetTeam());
 
 	Parent::OnPlayerKill(roomSession, killer, target);
 }

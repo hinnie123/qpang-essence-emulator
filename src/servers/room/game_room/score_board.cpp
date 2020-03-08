@@ -1,43 +1,27 @@
 #include "score_board.hpp"
 
+ScoreBoard::ScoreBoard(uint16_t blueScore, uint16_t yellowScore, uint16_t scoreLeader, std::vector<ScoreBoard::Player> players)
+	:
+	m_blueScore(blueScore),
+	m_yellowScore(yellowScore),
+	m_scoreLeader(scoreLeader),
+	m_players(players)
+{
+}
+
 uint16_t ScoreBoard::GetBlueScore()
 {
-	uint16_t val = 0;
-
-	for (ScoreBoard::Player player : m_players)
-	{
-		if (player.team == Team::BLUE)
-			val += player.score;
-	}
-
-	return val;
+	return m_blueScore;
 }
 
 uint16_t ScoreBoard::GetYellowscore()
 {
-	uint16_t val = 0;
-
-	for (ScoreBoard::Player player : m_players)
-	{
-		if (player.team == Team::YELLOW)
-			val += player.score;
-	}
-
-	return val;
+	return m_yellowScore;
 }
 
 uint16_t ScoreBoard::GetValueLeader()
 {
-	uint16_t val = 0;
-
-	for (ScoreBoard::Player player : m_players)
-	{
-		if (player.score > val) {
-			val = player.score;
-		}
-	}
-
-	return val;
+	return m_scoreLeader;
 }
 
 void ScoreBoard::AddPlayer(ScoreBoard::Player player)
